@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔄</text></svg>'>
+
+	<link rel="stylesheet" href="https://prismjs.com/themes/prism.css">
+	<link rel="stylesheet" href="https://live.prismjs.com/prism-live.css">
+	<link rel="stylesheet" href="style.css">
+	<title>reprog</title>
+</head>
+<body>
+	<header>
+		<h1>Reprog</h1>
+	</header>
+	<main>
+		<section id="demo">
+			<label>
+				Make some edits here:
+				<textarea id="source" class="prism-live language-css"></textarea>
+			</label>
+			<label>
+				Observe them being replayed here:
+				<textarea id="destination" class="prism-live language-css"></textarea>
+			</label>
+		</section>
+
+		<div>
+			<button onclick="destination.value = destination.textContent; destination.dispatchEvent(new InputEvent('input')); replayer.runAll(recorder.actions)">Replay all</button>
+		</div>
+		<p>Actions log:</p>
+		<pre id=log>
+
+		</pre>
+	</main>
+
+
+	<script src="https://prismjs.com/prism.js"></script>
+	<script src="https://live.prismjs.com/src/prism-live.js?load=css,html,javascript"></script>
+	<script src="demo.js" type="module"></script>
+</body>
+</html>
