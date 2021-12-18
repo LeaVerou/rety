@@ -42,6 +42,10 @@ export default class Recorder extends EventTarget {
 				action.type = "insertText";
 				action.text = this.editor.value.substring(this.#selectionEnd, end);
 			}
+			else if (/^delete.+(Forward|Backward)/.test(type)) {
+				// Store caret position so we know until which point to delete
+				action.after = [start, end];
+			}
 
 			// Compact insertText
 			if (action.type === "insertText") {

@@ -53,29 +53,41 @@ export default class Replayer {
 		else if (type === "deleteContentForward") {
 			document.execCommand("forwardDelete", false, null);
 		}
+		else if (type === "deleteEntireSoftLine") {
+
+		}
+		else if (type.startsWith("delete")) {
+			let after = action.after;
+			let command = type.endsWith("Backward")? "delete" : "forwardDelete";
+
+			do {
+				document.execCommand(command, false, null);
+			}
+			while (this.editor.selectionStart > 0
+				&& this.editor.selectionStart < this.editor.value.length - 1
+				&& this.editor.selectionStart !== after[0]);
+		}
 		else if (type === "historyUndo") {
 			document.execCommand("undo", false, null);
 		}
 		else if (type === "historyRedo") {
 			document.execCommand("redo", false, null);
 		}
-		else if (type === "deleteWordBackward"){
-			let after = action.after;
-			do {
-				document.execCommand("delete", false, null);
-			} while (this.editor.selectionStart > 0 && this.editor.selectionStart !== after[0])
+
+		let evt;
+
+		if (type === "select") {
+			evt = new Event("select", {bubbles: true})
 		}
-		else if (type === "deleteWordForward") {
-			let after = action.after;
-			do {
-				document.execCommand("forwardDelete", false, null);
-			} while (this.editor.selectionStart < this.editor.value.length - 1 && this.editor.selectionStart !== after[0])
+		else {
+			evt = new InputEvent("input", {
+				inputType: type,
+				data: action.text,
+				bubbles: true
+			});
 		}
 
-		this.editor.dispatchEvent(new InputEvent("input", {
-			inputType: type,
-			data: action.text,
-		}));
+		this.editor.dispatchEvent(evt);
 
 		if (this.editor !== activeElement) {
 			activeElement.focus();
