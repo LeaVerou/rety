@@ -21,6 +21,11 @@ export default class Replayer {
 			this.editor.focus();
 		}
 
+		if (typeof action === "string") {
+			// Expand compact insertText action
+			action = {type: "insertText", text: action};
+		}
+
 		let {type, start, end} = action;
 
 		if (start !== undefined) {

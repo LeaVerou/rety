@@ -43,6 +43,11 @@ export default class Recorder extends EventTarget {
 				action.text = this.editor.value.substring(this.#selectionEnd, end);
 			}
 
+			// Compact insertText
+			if (action.type === "insertText") {
+				action = action.text;
+			}
+
 			this.#addAction(action);
 
 			// console.log(evt.inputType, evt.data, start, end);
