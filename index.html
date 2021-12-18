@@ -28,7 +28,8 @@
 		</section>
 
 		<div>
-			<button onclick="destination.value = destination.textContent; destination.dispatchEvent(new InputEvent('input')); replayer.runAll(recorder.actions)">Replay all</button>
+			<button onclick="source.value = destination.value = destination.textContent; source.dispatchEvent(new InputEvent('input')); destination.dispatchEvent(new InputEvent('input'));">Reset</button>
+			<button onclick="replayer.runAll(recorder.actions)">Replay all</button>
 		</div>
 		<p>Actions log:</p>
 		<pre id=log>

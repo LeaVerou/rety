@@ -1,9 +1,11 @@
 import Recorder from "./src/recorder.js";
 import Replayer from "./src/replayer.js";
 
-const initialCode = `* {
+let initialCode = `* {
 	color: red;
 }`;
+
+// initialCode = "";
 
 source.textContent = source.value = initialCode;
 destination.textContent = destination.value = initialCode;
@@ -13,11 +15,13 @@ window.replayer = new Replayer(destination);
 
 setTimeout(recorder.start(), 1000);
 
-recorder.addEventListener("action", function (evt) {
+let lastAction;
+recorder.addEventListener("action", async function (evt) {
+	await lastAction;
 	let action = evt.detail;
 
 	log.textContent = stringifyArray(recorder.actions);
-	replayer.run(action);
+	lastAction = replayer.run(action);
 });
 
 

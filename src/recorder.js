@@ -1,8 +1,10 @@
-const eventsMonitored = ["input", "beforeinput", "select", "paste"];
+const eventsMonitored = ["input", "beforeinput", "select", "paste", "keyup", "pointerdown", "pointerup"];
 
 export default class Recorder extends EventTarget {
 	#clipboardText
 	#beforeinput
+	#selectionStart
+	#selectionEnd
 
 	constructor (editor) {
 		super();
@@ -10,7 +12,11 @@ export default class Recorder extends EventTarget {
 		this.actions = [];
 	}
 
-	#addAction (action) {
+	#addAction (action, {replace} = {}) {
+		if (replace) {
+			this.actions.pop();
+		}
+
 		this.actions.push(action);
 		this.dispatchEvent(new CustomEvent("action", {detail: action}));
 	}
@@ -25,40 +31,41 @@ export default class Recorder extends EventTarget {
 			let type = evt.inputType;
 			let text = evt.data;
 
-			let action = {
-				type,
-				start: this.#beforeinput.start,
-				end: this.#beforeinput.end,
-				after: [start, end],
-				text,
-			};
+			let action = {type, text};
 
 			if (type === "insertFromPaste" && text === null) {
 				// Chrome doesn't include the pasted text in evt.data so we need to get it from the paste event
+				action.type = "insertText";
 				action.text = this.#clipboardText;
+			}
+			else if (type === "insertLineBreak") {
+				action.type = "insertText";
+				action.text = this.editor.value.substring(this.#selectionEnd, end);
 			}
 
 			this.#addAction(action);
 
-			console.log(evt.inputType, evt.data, start, end);
+			// console.log(evt.inputType, evt.data, start, end);
 		}
-		else if (evt.type === "beforeinput") {
-			console.log(evt.type, evt.inputType, evt.data);
-			this.#beforeinput = { evt, start, end};
+
+		if (["select", "beforeinput", "keydown", "click", "pointerdown", "pointerup"].includes(evt.type)) {
+			// Has the caret moved?
+			if (this.#selectionStart !== start || this.#selectionEnd !== end) {
+				this.#addAction({type: "select", start, end}, {
+					replace: lastAction && lastAction.type === "select"
+				});
+			}
 		}
-		else if (evt.type === "select") {
-			this.#addAction({
-				type: "select",
-				start, end,
-				direction: this.editor.selectionDirection
-			});
-		}
-		else if (evt.type === "paste") {
+
+		if (evt.type === "paste") {
 			this.#clipboardText = evt.clipboardData.getData("text/plain");
 		}
 		else {
-			console.log(evt.type, start, end);
+			// console.log(evt.type, start, end);
 		}
+
+		this.#selectionStart = start;
+		this.#selectionEnd = end;
 	}
 
 	start () {

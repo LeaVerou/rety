@@ -7,14 +7,14 @@ export default class Replayer {
 		this.editor = editor;
 	}
 
-	async runAll (actions, delay = 500) {
+	async runAll (actions, delay = 200) {
 		for (let action of actions) {
-			this.run(action);
+			await this.run(action);
 			await timeout(delay);
 		}
 	}
 
-	run (action) {
+	async run (action) {
 		let activeElement = document.activeElement;
 
 		if (this.editor !== activeElement) {
@@ -23,20 +23,36 @@ export default class Replayer {
 
 		let {type, start, end} = action;
 
-		this.editor.selectionStart = start;
+		if (start !== undefined) {
+			this.editor.selectionStart = start;
+		}
 
 		if (end !== undefined) {
 			this.editor.selectionEnd = end;
 		}
 
 		if (type === "insertText" || type === "insertFromPaste") {
-			document.execCommand("insertText", false, action.text);
+			let ret = document.execCommand("insertText", false, action.text);
+
+			if (ret === false) {
+				// Chrome sometimes fails to run this with
+				// "We don't execute document.execCommand() this time, because it is called recursively."
+				// so we try once more
+				await timeout(10);
+				document.execCommand("insertText", false, action.text);
+			}
 		}
-		else if (type === "deleteContentBackward") {
+		else if (type === "deleteContentBackward" || type === "deleteByCut" || type === "deleteByDrag") {
 			document.execCommand("delete", false, null);
 		}
 		else if (type === "deleteContentForward") {
 			document.execCommand("forwardDelete", false, null);
+		}
+		else if (type === "historyUndo") {
+			document.execCommand("undo", false, null);
+		}
+		else if (type === "historyRedo") {
+			document.execCommand("redo", false, null);
 		}
 		else if (type === "deleteWordBackward"){
 			let after = action.after;
@@ -50,6 +66,11 @@ export default class Replayer {
 				document.execCommand("forwardDelete", false, null);
 			} while (this.editor.selectionStart < this.editor.value.length - 1 && this.editor.selectionStart !== after[0])
 		}
+
+		this.editor.dispatchEvent(new InputEvent("input", {
+			inputType: type,
+			data: action.text,
+		}));
 
 		if (this.editor !== activeElement) {
 			activeElement.focus();
