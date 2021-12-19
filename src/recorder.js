@@ -22,7 +22,7 @@ export default class Recorder extends EventTarget {
 	}
 
 	handleEvent (evt) {
-		let lastAction = this.actions.at(-1);
+		let lastAction = this.actions[this.actions.length - 1];
 
 		let start = this.editor.selectionStart;
 		let end = this.editor.selectionEnd;
