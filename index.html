@@ -1,22 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔄</text></svg>'>
 
-	<link rel="stylesheet" href="https://prismjs.com/themes/prism.css">
-	<link rel="stylesheet" href="https://live.prismjs.com/prism-live.css">
-	<link rel="stylesheet" href="style.css">
-	<title>reprog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rety: Record and replay coding</title>
+
+<link rel="icon" href='logo.svg'>
+
+<link rel="stylesheet" href="https://prismjs.com/themes/prism.css">
+<link rel="stylesheet" href="https://live.prismjs.com/prism-live.css">
+<link rel="stylesheet" href="style.css">
+
+<script src="https://md-block.verou.me/md-block.js" type="module" async></script>
+
 </head>
 <body>
-	<header>
-		<h1>Reprog</h1>
-	</header>
-	<main>
-		<section id="demo">
+
+<header>
+	<h1>re<span>ty</span></h1>
+	<h2>“Live” coding without the stress</h2>
+</header>
+
+<nav>
+	<a href="#usage">Usage</a>
+	<a href="#api">API</a>
+	<a href="#recipes">Recipes</a>
+	<!-- <a href="tests.html">Tests</a> -->
+	<a href="https://github.com/leaverou/rety">GitHub</a>
+</nav>
+
+<main>
+	<section id="demo">
+		<div id="demo-textareas">
 			<label>
 				Make some edits here:
 				<textarea id="source" class="prism-live language-css"></textarea>
@@ -25,8 +41,7 @@
 				Observe them being replayed here:
 				<textarea id="destination" class="prism-live language-css"></textarea>
 			</label>
-		</section>
-
+		</div>
 		<div>
 			<button onclick="source.value = destination.value = destination.textContent; source.dispatchEvent(new InputEvent('input')); destination.dispatchEvent(new InputEvent('input'));">Reset</button>
 			<button onclick="replayer.runAll(recorder.actions)">Replay all</button>
@@ -35,11 +50,15 @@
 		<pre id=log>
 
 		</pre>
-	</main>
+	</section>
 
 
-	<script src="https://prismjs.com/prism.js"></script>
-	<script src="https://live.prismjs.com/src/prism-live.js?load=css,html,javascript"></script>
-	<script src="demo.js" type="module"></script>
+</main>
+
+
+<script src="https://prismjs.com/prism.js"></script>
+<script src="https://live.prismjs.com/src/prism-live.js?load=css,html,javascript"></script>
+<script src="demo.js" type="module"></script>
+
 </body>
 </html>

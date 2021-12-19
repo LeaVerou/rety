@@ -209,9 +209,11 @@ pre[class] {
 
 #log {
 	font-size: 50%;
+	max-height: 50em;
+	overflow: auto;
 }
 
-#demo {
+#demo-textareas {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 }
