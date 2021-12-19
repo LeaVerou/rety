@@ -47,7 +47,7 @@ export default class Replayer {
 				document.execCommand("insertText", false, action.text);
 			}
 		}
-		else if (type === "deleteContentBackward" || type === "deleteByCut" || type === "deleteByDrag") {
+		else if (type === "deleteContentBackward" || type === "deleteContent" || type === "deleteByCut" || type === "deleteByDrag") {
 			document.execCommand("delete", false, null);
 		}
 		else if (type === "deleteContentForward") {
@@ -72,6 +72,11 @@ export default class Replayer {
 		}
 		else if (type === "historyRedo") {
 			document.execCommand("redo", false, null);
+		}
+		else if (type === "replace") {
+			if (action.text) {
+				this.editor.value = action.text;
+			}
 		}
 
 		let evt;

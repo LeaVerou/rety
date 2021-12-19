@@ -33,7 +33,12 @@ export default class Recorder extends EventTarget {
 
 			let action = {type, text};
 
-			if (type === "insertFromPaste" && text === null) {
+			if (!type) {
+				// No inputType, possibly a synthetic event. Fall back to replacing the entire comments
+				action.type = "replace";
+				action.text = this.editor.value;
+			}
+			else if (type === "insertFromPaste" && text === null) {
 				// Chrome doesn't include the pasted text in evt.data so we need to get it from the paste event
 				action.type = "insertText";
 				action.text = this.#clipboardText;
@@ -42,7 +47,7 @@ export default class Recorder extends EventTarget {
 				action.type = "insertText";
 				action.text = this.editor.value.substring(this.#selectionEnd, end);
 			}
-			else if (/^delete.+(Forward|Backward)/.test(type)) {
+			else if (/^delete(Word|(Soft|Hard)Line)(Forward|Backward)/.test(type)) {
 				// Store caret position so we know until which point to delete
 				action.after = [start, end];
 			}
@@ -57,7 +62,7 @@ export default class Recorder extends EventTarget {
 			// console.log(evt.inputType, evt.data, start, end);
 		}
 
-		if (["select", "beforeinput", "keydown", "click", "pointerdown", "pointerup"].includes(evt.type)) {
+		if (["select", "beforeinput", "keydown", "keyup", "click", "pointerdown", "pointerup"].includes(evt.type)) {
 			// Has the caret moved?
 			if (this.#selectionStart !== start || this.#selectionEnd !== end) {
 				this.#addAction({type: "select", start, end}, {
