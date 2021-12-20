@@ -2,7 +2,6 @@ const eventsMonitored = ["input", "beforeinput", "select", "paste", "keyup", "po
 
 export default class Recorder extends EventTarget {
 	#clipboardText
-	#beforeinput
 	#selectionStart
 	#selectionEnd
 
@@ -18,7 +17,7 @@ export default class Recorder extends EventTarget {
 		}
 
 		this.actions.push(action);
-		this.dispatchEvent(new CustomEvent("action", {detail: action}));
+		this.dispatchEvent(new CustomEvent("actionschange", {detail: action}));
 	}
 
 	handleEvent (evt) {
@@ -39,7 +38,8 @@ export default class Recorder extends EventTarget {
 				action.text = this.editor.value;
 			}
 			else if (type === "insertFromPaste" && text === null) {
-				// Chrome doesn't include the pasted text in evt.data so we need to get it from the paste event
+				// Chrome doesn't include the pasted text in evt.data so we need to get it from the paste event (crbug #1159273)
+				// TODO workaround for insertFromDrag as well
 				action.type = "insertText";
 				action.text = this.#clipboardText;
 			}
@@ -58,8 +58,6 @@ export default class Recorder extends EventTarget {
 			}
 
 			this.#addAction(action);
-
-			// console.log(evt.inputType, evt.data, start, end);
 		}
 
 		if (["select", "beforeinput", "keydown", "keyup", "click", "pointerdown", "pointerup"].includes(evt.type)) {

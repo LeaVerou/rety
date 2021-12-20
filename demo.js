@@ -18,7 +18,7 @@ window.replayer = new Replayer(destination);
 setTimeout(recorder.start(), 1000);
 
 let lastAction;
-recorder.addEventListener("action", async function (evt) {
+recorder.addEventListener("actionschange", async function (evt) {
 	await lastAction;
 	let action = evt.detail;
 
