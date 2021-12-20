@@ -58,7 +58,7 @@ export default class Recorder extends EventTarget {
 			}
 
 			// Compact insertText
-			if (action.type === "insertText" && text) {
+			if (action.type === "insertText" && action.text) {
 				action = action.text;
 			}
 
