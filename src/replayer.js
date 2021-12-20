@@ -3,15 +3,23 @@ function timeout(ms) {
 }
 
 export default class Replayer {
-	constructor (editor) {
+	constructor (editor, options = {}) {
 		this.editor = editor;
+		this.options = Object.assign(Replayer.defaultOptions, options);
 	}
 
-	async runAll (actions, {delay = 200} = {}) {
-		for (let action of actions) {
-			await this.run(action);
-			await timeout(delay);
+	async runAll (actions) {
+		this.queue = actions;
+		return this.resume();
+	}
+
+	async queueAll (actions) {
+		if (!this.queue) {
+			this.queue = [];
 		}
+
+		this.queue.push(...actions);
+		return this.resume();
 	}
 
 	async run (action) {
@@ -97,5 +105,36 @@ export default class Replayer {
 		if (this.editor !== activeElement) {
 			activeElement.focus();
 		}
+	}
+
+	pause () {
+		this.paused = true;
+	}
+
+	async resume () {
+		if (!this.queue) {
+			throw new TypeError("Nothing to resume");
+		}
+
+		this.paused = false;
+
+		while (this.queue.length > 0) {
+			if (this.paused === true) {
+				return;
+			}
+
+			let action = this.queue.shift();
+			await this.run(action);
+			await timeout(this.options.delay);
+		}
+	}
+
+	stop () {
+		this.paused = true;
+		this.queue = null;
+	}
+
+	static defaultOptions = {
+		delay: 200
 	}
 }

@@ -9,6 +9,15 @@
 
 <section>
 
+## What is this?
+
+Rety is a library that allows you to record the edits you make on a piece of text (usually code)
+and replay them later to recreate the same typing flow.
+
+</section>
+
+<section>
+
 ## Background & Motivation
 
 I love live coding as a teaching tool, and over the years
@@ -21,17 +30,19 @@ I love live coding as a teaching tool, and over the years
 [speaking](https://twitter.com/johnallsopp/status/926417129070456832)
 [style](https://bradfrost.com/blog/post/on-speaking/#:~:text=Don%E2%80%99t%20live%20code%20%E2%80%93%20This%20applies%20to%20everyone%20except%20Lea%20Verou%2C%20who%20is%20an%20absolute%20beast).
 
-It allows the speaker to demonstrate not only the final state of a coding snippet, but how you get there, and what the intermediate results are.
+When combined with some kind of interactive preview,
+it allows the speaker to demonstrate not only the final state of a coding snippet, but how you get there, and what the intermediate results are.
 
 However, it does create a unique challenge: My live coded slides don't make sense without me.
 This may be acceptable for a conference talk, which is usually recorded, but not in other contexts,
 such as teaching a university course, where all instructors need to be able to teach all lectures.
 
-I didn't want to remove live coding from my slides, as I truly belive it is the perfect implementation of the *"show, not tell"* teaching adage,
+I didn't want to remove live coding from my slides, as I truly belive it is the perfect implementation of the *"show, don’t tell"* teaching adage,
 so I thought instead: what if I could *record* my live coding, and make it replayable?
+However, doing so manually seemed like cruel and unusual punishment.
 And thus, rety was born (pronounced like the "rety" in "retype").
 
-Rety is designed to work well with the code editors of [Prism Live](https://live.prismjs.com/)
+Rety is designed to work well with the code editors of [Prism Live](https://live.prismjs.com/) and [CodeFlask](https://kazzkiq.github.io/CodeFlask/)
 but it should work with any `<input>`, `<textarea>` or even [compatible custom elements](#recorder-compatible-controls).
 
 </section>
@@ -54,13 +65,13 @@ recorder.addEventListener("actionschange", evt => {
 });
 ```
 
-To replay an array of actions on a textarea with default settings:
+To replay an array of actions (`actionsArray`) on a textarea (`editor`) with default settings:
 
 ```js
 import Replayer from "https://rety.verou.me/src/replayer.js";
 
-let replayer = new Replayer(actionsArray);
-replayer.runAll();
+let replayer = new Replayer(editor);
+replayer.runAll(actionsArray);
 ```
 
 Instead of importing directly from the CDN, you can also use npm:
@@ -108,10 +119,50 @@ You can also provide options when calling `start()`:
 recorder.start({preserveCaretChanges: true});
 ```
 
+#### `new Recorder(editor [, options])`
+
+Options:
+
+| Option | Default | Description |
+|---|---|---|
+| `preserveCaretChanges` | `false` | If true, will not coalesce consecutive caret position changes |
+
 
 ### `Replayer` class
 
 The `Replayer` class allows you to run a single action or a sequence of actions on an `<input>`, `<textarea>`, or any [replayer-compatible control](#compatible-controls).
+
+#### `new Replayer(editor [, options])`
+
+Options:
+
+| Option | Default | Description |
+|---|---|---|
+| `delay` | `200` | Delay between consecutive actions when `runAll()` is used |
+
+#### `async replayer.runAll(actions)`
+
+Run a sequence of actions. Returns a promise that resolves when all actions have ran or the replayer has been paused.
+If another sequence of actions is currently being played, it will stop it first, then replace the rest of its queue.
+
+#### `async replayer.queueAll(actions)`
+
+Just like `runAll()` but instead of replacing the queue, it will add the actions to the queue.
+
+#### `async replayer.run(action)`
+
+Run a single action
+
+#### `replayer.pause()`
+
+Pause the sequence of actions currently running (if any).
+
+Note that pausing does not happen synchronously.
+The action currently executing will finish first, but the rest of the queue will not run (until `resume()` is called).
+
+#### `async replayer.resume()`
+
+Resumes playing the current queue.
 
 ### Actions
 
