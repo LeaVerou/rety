@@ -44,7 +44,7 @@
 		</div>
 		<div>
 			<button onclick="source.value = destination.value = destination.textContent; source.dispatchEvent(new InputEvent('input')); destination.dispatchEvent(new InputEvent('input'));">Reset</button>
-			<button onclick="replayer.runAll(recorder.actions)">Replay all</button>
+			<button onclick="destination.value = destination.textContent; replayer.runAll(recorder.actions)">Replay all</button>
 		</div>
 		<p>Actions log:</p>
 		<pre id="log-pre" class="language-json"><code id="log"></code></pre>
