@@ -64,8 +64,8 @@ export default class Recorder extends EventTarget {
 		if (["select", "beforeinput", "keydown", "keyup", "click", "pointerdown", "pointerup"].includes(evt.type)) {
 			// Has the caret moved?
 			if (this.#selectionStart !== start || this.#selectionEnd !== end) {
-				this.#addAction({type: "select", start, end}, {
-					replace: !this.options.preserveCaretChanges && lastAction && lastAction.type === "select"
+				this.#addAction({type: "caret", start, end}, {
+					replace: !this.options.preserveCaretChanges && lastAction && lastAction.type === "caret"
 				});
 			}
 		}

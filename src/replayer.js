@@ -81,7 +81,7 @@ export default class Replayer {
 
 		let evt;
 
-		if (type === "select") {
+		if (type === "caret") {
 			evt = new Event("select", {bubbles: true})
 		}
 		else {
