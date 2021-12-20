@@ -5,9 +5,10 @@ export default class Recorder extends EventTarget {
 	#selectionStart
 	#selectionEnd
 
-	constructor (editor) {
+	constructor (editor, options) {
 		super();
 		this.editor = editor;
+		this.options = options || {};
 		this.actions = [];
 	}
 
@@ -64,7 +65,7 @@ export default class Recorder extends EventTarget {
 			// Has the caret moved?
 			if (this.#selectionStart !== start || this.#selectionEnd !== end) {
 				this.#addAction({type: "select", start, end}, {
-					replace: lastAction && lastAction.type === "select"
+					replace: !this.options.preserveCaretChanges && lastAction && lastAction.type === "select"
 				});
 			}
 		}
@@ -80,7 +81,11 @@ export default class Recorder extends EventTarget {
 		this.#selectionEnd = end;
 	}
 
-	start () {
+	start (options) {
+		if (options) {
+			this.options = options;
+		}
+
 		for (let evt of eventsMonitored) {
 			this.editor.addEventListener(evt, this);
 		}
