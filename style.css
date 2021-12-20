@@ -3,6 +3,9 @@
 	--main-color-hsl: var(--main-color-hs) 50%;
 	--main-color: hsl(var(--main-color-hsl));
 	--gray: 200 20% 50%;
+
+	--font-body: system-ui, sans-serif;
+	--font-mono: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 body {
@@ -10,7 +13,7 @@ body {
 	flex-flow: column;
 	min-height: 100vh;
 	margin: 0;
-	font: 120%/1.5 system-ui, sans-serif;
+	font: 120%/1.5 var(--font-body);
 }
 
 a {
@@ -193,10 +196,12 @@ nav {
 		padding: .4em .5em;
 		color: white;
 		font-weight: bold;
+		background: linear-gradient(to right, hsl(var(--main-color-hs) 50%), hsl(var(--main-color-hs) 75%)) no-repeat left / 0 100%;
+		transition: .3s;
 	}
 
 	nav > a:hover {
-		background: linear-gradient(to right, hsl(var(--main-color-hs) 50%), hsl(var(--main-color-hs) 75%));
+		background-size: 100% 100%;
 	}
 
 	nav > a:where(:not(:hover)) {
@@ -217,6 +222,12 @@ pre[class] {
 	word-break: break-all;
 }
 
+#log:empty::before {
+	content: "(No actions yet)";
+	opacity: .6;
+	font: italic 1rem/1.5 var(--font-body);
+}
+
 #demo-textareas {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -228,4 +239,8 @@ textarea::selection {
 
 textarea::inactive-selection {
 	background: red;
+}
+
+md-block header {
+	display: none;
 }
