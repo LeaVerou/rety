@@ -22,7 +22,7 @@ export default class Replayer {
 		return this.resume();
 	}
 
-	async run (action) {
+	async run (action = this.queue.pop()) {
 		let activeElement = document.activeElement;
 
 		if (this.editor !== activeElement) {
@@ -124,8 +124,19 @@ export default class Replayer {
 			}
 
 			let action = this.queue.shift();
-			await this.run(action);
-			await timeout(this.options.delay);
+
+			if (action.type === "pause") {
+				if (this.options.pauses === "delay") {
+					await timeout(action.delay);
+				}
+				else if (this.options.pauses === "pause") {
+					this.paused = true;
+				}
+			}
+			else {
+				await this.run(action);
+				await timeout(this.options.delay);
+			}
 		}
 	}
 
@@ -135,6 +146,7 @@ export default class Replayer {
 	}
 
 	static defaultOptions = {
-		delay: 200
+		delay: 200,
+		pauses: "delay"
 	}
 }

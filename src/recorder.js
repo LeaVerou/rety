@@ -8,11 +8,17 @@ export default class Recorder extends EventTarget {
 	constructor (editor, options) {
 		super();
 		this.editor = editor;
-		this.options = options || {};
+		this.options = Object.assign(Recorder.defaultOptions, options);
 		this.actions = [];
 	}
 
 	#addAction (action, {replace} = {}) {
+		let timestamp = Date.now();
+
+		if (timestamp - this.#timestamp > this.options.pauseThreshold) {
+			this.actions.push({type: "pause", delay: timestamp - this.#timestamp});
+		}
+
 		if (replace) {
 			this.actions.pop();
 		}
@@ -96,5 +102,10 @@ export default class Recorder extends EventTarget {
 		for (let evt of eventsMonitored) {
 			this.editor.removeEventListener(evt, this);
 		}
+	}
+
+	static defaultOptions = {
+		preserveCaretChanges: false,
+		pauseThreshold: 2000
 	}
 }
