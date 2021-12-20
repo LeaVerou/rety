@@ -7,7 +7,7 @@ export default class Replayer {
 		this.editor = editor;
 	}
 
-	async runAll (actions, delay = 200) {
+	async runAll (actions, {delay = 200} = {}) {
 		for (let action of actions) {
 			await this.run(action);
 			await timeout(delay);
