@@ -25,7 +25,7 @@ However, it does create a unique challenge: My live coded slides don't make sens
 This may be acceptable for a conference talk, which is usually recorded, but not in other contexts,
 such as teaching a university course, where all instructors need to be able to teach all lectures.
 
-I didn't want to remove live coding from my slides, as I truly belive it is the perfect implementation of the "show, not tell" teaching adage,
+I didn't want to remove live coding from my slides, as I truly belive it is the perfect implementation of the *"show, not tell"* teaching advice,
 so I thought instead: what if I could *record* my live coding, and make it replayable? And thus, rety was born.
 
 </section>

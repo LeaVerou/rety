@@ -207,10 +207,14 @@ pre[class] {
 	background: hsl(var(--gray) / .1);
 }
 
-#log {
+#log-pre {
 	font-size: 50%;
+}
+
+#log {
 	max-height: 50em;
 	overflow: auto;
+	word-break: break-all;
 }
 
 #demo-textareas {

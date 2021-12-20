@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>rety: Record and replay coding</title>
+<title>rety: Live coding without the stress</title>
 
 <link rel="icon" href='logo.svg'>
 
@@ -19,7 +19,7 @@
 
 <header>
 	<h1>re<span>ty</span></h1>
-	<h2>“Live” coding without the stress</h2>
+	<h2>Live coding without the stress</h2>
 </header>
 
 <nav>
@@ -47,9 +47,7 @@
 			<button onclick="replayer.runAll(recorder.actions)">Replay all</button>
 		</div>
 		<p>Actions log:</p>
-		<pre id=log>
-
-		</pre>
+		<pre id="log-pre" class="language-json"><code id="log"></code></pre>
 	</section>
 
 
