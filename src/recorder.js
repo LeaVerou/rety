@@ -31,7 +31,11 @@ export default class Recorder extends EventTarget {
 			let type = evt.inputType;
 			let text = evt.data;
 
-			let action = {type, text};
+			let action = {type};
+
+			if (text !== null) {
+				action.text = text;
+			}
 
 			if (!type) {
 				// No inputType, possibly a synthetic event. Fall back to replacing the entire comments
@@ -54,7 +58,7 @@ export default class Recorder extends EventTarget {
 			}
 
 			// Compact insertText
-			if (action.type === "insertText") {
+			if (action.type === "insertText" && text) {
 				action = action.text;
 			}
 
@@ -72,9 +76,6 @@ export default class Recorder extends EventTarget {
 
 		if (evt.type === "paste") {
 			this.#clipboardText = evt.clipboardData.getData("text/plain");
-		}
-		else {
-			// console.log(evt.type, start, end);
 		}
 
 		this.#selectionStart = start;
