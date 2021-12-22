@@ -35,16 +35,20 @@
 		<div id="demo-textareas">
 			<label>
 				Make some edits here:
-				<textarea id="source" class="prism-live language-css"></textarea>
+				<textarea id="sourceCSS" class="prism-live language-css source"></textarea>
+				<textarea id="sourceHTML" class="prism-live language-markup source"></textarea>
 			</label>
 			<label>
 				Observe them being replayed here:
-				<textarea id="destination" class="prism-live language-css"></textarea>
+				<textarea id="destCSS" class="prism-live language-css dest"></textarea>
+				<textarea id="destHTML" class="prism-live language-markup dest"></textarea>
 			</label>
 		</div>
 		<div>
-			<button onclick="source.value = destination.value = destination.textContent; source.dispatchEvent(new InputEvent('input')); destination.dispatchEvent(new InputEvent('input'));">Reset</button>
-			<button onclick="destination.value = destination.textContent; replayer.runAll(recorder.actions)">Replay all</button>
+			<button onclick="Demo.reset()">Reset</button>
+			<button onclick="replayer.run()">Replay one</button>
+			<button onclick="Demo.runUntilNextPause()">Replay section</button>
+			<button onclick="Demo.runAll()">Replay all</button>
 			<button onclick="replayer.pause()">Pause</button>
 			<button onclick="replayer.resume()">Resume</button>
 		</div>
@@ -57,7 +61,7 @@
 
 
 <script src="https://prismjs.com/prism.js"></script>
-<script src="https://live.prismjs.com/src/prism-live.js?load=css,html,javascript"></script>
+<script src="https://live.prismjs.com/src/prism-live.js?load=css,markup,javascript"></script>
 <script src="demo.js" type="module"></script>
 
 </body>

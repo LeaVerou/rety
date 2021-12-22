@@ -1,19 +1,28 @@
 import Recorder from "./src/recorder.js";
 import Replayer from "./src/replayer.js";
 
-let initialCode = `* {
+let initialCode = {
+	css: `* {
 	color: red;
-}`;
+}`,
+	html: `<button>Click me</button>
+<button class="pink">Click me</button>`
+};
 
-// initialCode = "";
+sourceCSS.textContent = initialCode.css;
+destCSS.textContent = initialCode.css;
+sourceHTML.textContent = initialCode.html;
+destHTML.textContent = initialCode.html;
 
-source.textContent = source.value = initialCode;
-destination.textContent = destination.value = initialCode;
-source.dispatchEvent(new InputEvent("input"));
-destination.dispatchEvent(new InputEvent("input"));
+for (let t of $$("#demo-textareas textarea")) {
+	t.value = t.textContent;
+	t.dispatchEvent(new InputEvent('input'));
+}
 
-window.recorder = new Recorder(source);
-window.replayer = new Replayer(destination);
+window.recorder = new Recorder({css: sourceCSS, html: sourceHTML});
+window.replayer = new Replayer({css: destCSS, html: destHTML});
+
+
 
 setTimeout(recorder.start(), 1000);
 
@@ -44,4 +53,46 @@ function stringifyArray(arr) {
 		ret += str + (isLast? "\n" : (isLong? ",\n\t" : ", "));
 	}
 	return ret + "]";
+}
+
+function $$(selector, context = document) {
+	return Array.from(context.querySelectorAll(selector));
+}
+
+window.Demo = {
+	reset () {
+		for (let t of $$("#demo-textareas textarea")) {
+			t.value = t.textContent;
+			t.dispatchEvent(new InputEvent('input'));
+		}
+	},
+
+	runOne () {
+		replayer.run();
+	},
+
+	runUntilNextPause () {
+		replayer.options.pauses = "pause";
+
+		if (replayer.queue) {
+			replayer.resume();
+		}
+		else {
+			Demo.runAll({pauses: "pause"})
+		}
+
+	},
+
+	runAll ({pauses = "delay"} = {}) {
+		replayer.options.pauses = pauses;
+
+		for (let t of $$("#demo-textareas textarea.dest")) {
+			t.value = t.textContent;
+			t.dispatchEvent(new InputEvent('input'));
+		}
+
+		replayer.runAll(recorder.actions)
+	},
+
+
 }

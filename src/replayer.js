@@ -3,9 +3,22 @@ function timeout(ms) {
 }
 
 export default class Replayer {
+	#activeEditor
+
 	constructor (editor, options = {}) {
-		this.editor = editor;
+
+		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
+			this.editors = {default: editor};
+		}
+		else { // editor is multiple elements
+			this.editors = editor;
+		}
+
 		this.options = Object.assign(Replayer.defaultOptions, options);
+	}
+
+	get editor () {
+		return this.#activeEditor ? this.editors[this.#activeEditor] : this.editors.default;
 	}
 
 	async runAll (actions) {
@@ -23,6 +36,10 @@ export default class Replayer {
 	}
 
 	async run (action = this.queue.pop()) {
+		if (action.editor) {
+			this.#activeEditor = action.editor;
+		}
+
 		let activeElement = document.activeElement;
 
 		if (this.editor !== activeElement) {

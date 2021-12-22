@@ -233,6 +233,10 @@ pre[class] {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+#demo div.prism-live {
+	margin-top: .3em;
+}
+
 textarea::selection {
 	background: var(--main-color);
 }

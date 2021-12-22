@@ -4,12 +4,25 @@ export default class Recorder extends EventTarget {
 	#clipboardText
 	#selectionStart
 	#selectionEnd
+	#activeEditor
+	#timestamp
 
-	constructor (editor, options) {
+	constructor (editor, options = {}) {
 		super();
-		this.editor = editor;
+
+		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
+			this.editors = {default: editor};
+		}
+		else { // editor is multiple elements
+			this.editors = editor;
+		}
+
 		this.options = Object.assign(Recorder.defaultOptions, options);
 		this.actions = [];
+	}
+
+	get editor () {
+		return this.#activeEditor ? this.editors[this.#activeEditor] : this.editors.default;
 	}
 
 	#addAction (action, {replace} = {}) {
@@ -25,9 +38,20 @@ export default class Recorder extends EventTarget {
 
 		this.actions.push(action);
 		this.dispatchEvent(new CustomEvent("actionschange", {detail: action}));
+
+		this.#timestamp = timestamp;
 	}
 
 	handleEvent (evt) {
+		let previousEditor = this.#activeEditor;
+
+		for (let id in this.editors) {
+			if (this.editors[id].contains(evt.target)) {
+				this.#activeEditor = id;
+				break;
+			}
+		}
+
 		let lastAction = this.actions[this.actions.length - 1];
 
 		let start = this.editor.selectionStart;
@@ -72,11 +96,24 @@ export default class Recorder extends EventTarget {
 		}
 
 		if (["select", "beforeinput", "keydown", "keyup", "click", "pointerdown", "pointerup"].includes(evt.type)) {
-			// Has the caret moved?
-			if (this.#selectionStart !== start || this.#selectionEnd !== end) {
-				this.#addAction({type: "caret", start, end}, {
-					replace: !this.options.preserveCaretChanges && lastAction && lastAction.type === "caret"
-				});
+			// Has the caret moved or the editor changed?
+			if (this.#selectionStart !== start || this.#selectionEnd !== end || this.#activeEditor !== previousEditor) {
+				let action = {type: "caret", start, end};
+
+				if (this.#activeEditor !== previousEditor) {
+					action.editor = this.#activeEditor;
+				}
+
+				let replace = !this.options.preserveCaretChanges
+					&& lastAction && lastAction.type === "caret" // last action is also a caret change
+					&& !action.editor; // and editor has not changed
+
+				if (replace && lastAction.editor) {
+					// Last action switched editor, we need to preserve this
+					action.editor = lastAction.editor;
+				}
+
+				this.#addAction(action, { replace });
 			}
 		}
 
@@ -94,13 +131,17 @@ export default class Recorder extends EventTarget {
 		}
 
 		for (let evt of eventsMonitored) {
-			this.editor.addEventListener(evt, this);
+			for (let id in this.editors) {
+				this.editors[id].addEventListener(evt, this);
+			}
 		}
 	}
 
 	pause () {
 		for (let evt of eventsMonitored) {
-			this.editor.removeEventListener(evt, this);
+			for (let id in this.editors) {
+				this.editors[id].removeEventListener(evt, this);
+			}
 		}
 	}
 
