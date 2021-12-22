@@ -2,7 +2,8 @@
 	--main-color-hs: 200 50%;
 	--main-color-hsl: var(--main-color-hs) 50%;
 	--main-color: hsl(var(--main-color-hsl));
-	--gray: 200 20% 50%;
+	--gray-hs: 200 20%;
+	--gray: var(--gray-hs) 50%;
 
 	--font-body: system-ui, sans-serif;
 	--font-mono: Consolas, "Liberation Mono", Menlo, Courier, monospace;
@@ -212,17 +213,13 @@ pre[class] {
 	background: hsl(var(--gray) / .1);
 }
 
-#log-pre {
-	font-size: 50%;
-}
-
 #log {
 	max-height: 50em;
 	overflow: auto;
 	word-break: break-all;
 }
 
-#log:empty::before {
+#log_container pre > code:empty::before {
 	content: "(No actions yet)";
 	opacity: .6;
 	font: italic 1rem/1.5 var(--font-body);
@@ -247,4 +244,62 @@ textarea::inactive-selection {
 
 md-block header {
 	display: none;
+}
+
+#log_container pre {
+	background: white;
+	border: hsl(var(--gray) / .3) 1px solid;
+}
+
+#log_container .prism-live {
+	font-size: .75rem;
+	line-height: 1.8;
+}
+
+.token.action {
+	--color: hsl(var(--color-hs) var(--color-l));
+	--color-hs: var(--gray-hs);
+	--color-l: 93%;
+	--_color: var(--color);
+	background: var(--_color);
+	padding: .2em 0 .1em;
+	box-shadow: 0 0 0 .15em var(--_color);
+	border-radius: .1em;
+}
+
+.language-actions-json .action-delete {
+	--color-hs: 0 80%;
+	--color-l: 93%;
+}
+
+.language-actions-json .action-pause {
+	--color-hs: 200 80%;
+	--color-l: 94%;
+}
+
+.language-actions-json .action-caret {
+	--color-hs: 250 60%;
+	--color-l: 95%;
+}
+
+.language-actions-json .compact-action {
+	--color-hs: 80 80%;
+	--color-l: 90%;
+}
+
+.language-actions-json > .token .token {
+	mix-blend-mode: multiply;
+}
+
+.language-actions-json .punctuation {
+	mix-blend-mode: multiply;
+}
+
+.playing .action:not(.played, .current) {
+	--color: hsl(var(--color-hs) calc(var(--color-l) * 1.1));
+}
+
+.action.current {
+	--color: hsl(var(--color-hs) calc(var(--color-l) * .9));
+	outline: 2px solid red;
 }

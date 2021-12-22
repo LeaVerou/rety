@@ -45,15 +45,18 @@
 			</label>
 		</div>
 		<div>
-			<button onclick="Demo.reset()">Reset</button>
-			<button onclick="replayer.run()">Replay one</button>
-			<button onclick="Demo.runUntilNextPause()">Replay section</button>
-			<button onclick="Demo.runAll()">Replay all</button>
-			<button onclick="replayer.pause()">Pause</button>
-			<button onclick="replayer.resume()">Resume</button>
+			<button onclick="Demo.reset()">⏏️ Reset</button>
+			<button onclick="Demo.rewind()">⏮ Rewind</button>
+			<button onclick="Demo.next()">▶️ Play next</button>
+			<button onclick="Demo.runUntilNextPause()">▶️ Play section</button>
+			<button onclick="Demo.runAll()">▶️ Play from beginning</button>
+			<button onclick="replayer.pause()">⏸ Pause</button>
+			<button onclick="replayer.resume()">▶️ Resume</button>
 		</div>
 		<p>Actions log:</p>
-		<pre id="log-pre" class="language-json"><code id="log"></code></pre>
+		<div id="log_container">
+			<textarea id="log" class="prism-live language-actions-json"></textarea>
+		</div>
 	</section>
 
 	<md-block src="README.md"></md-block>
