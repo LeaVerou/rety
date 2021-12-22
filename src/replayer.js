@@ -2,10 +2,11 @@ function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export default class Replayer {
+export default class Replayer extends EventTarget {
 	#activeEditor
 
 	constructor (editor, options = {}) {
+		super();
 
 		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
 			this.editors = {default: editor};
@@ -22,6 +23,7 @@ export default class Replayer {
 	}
 
 	async runAll (actions) {
+		this.played = [];
 		this.queue = actions;
 		return this.resume();
 	}
@@ -35,7 +37,7 @@ export default class Replayer {
 		return this.resume();
 	}
 
-	async run (action = this.queue.pop()) {
+	async run (action = this.queue.shift()) {
 		if (action.editor) {
 			this.#activeEditor = action.editor;
 		}
@@ -128,11 +130,38 @@ export default class Replayer {
 		this.paused = true;
 	}
 
+	async next () {
+		if (!this.queue || this.queue.length === 0) {
+			return;
+		}
+
+		let action = this.queue.shift();
+
+		if (action.type === "pause") {
+			if (this.options.pauses === "delay") {
+				await timeout(action.delay);
+			}
+			else if (this.options.pauses === "pause") {
+				this.paused = true;
+			}
+		}
+		else {
+			await this.run(action);
+			await timeout(this.options.delay);
+		}
+
+		this.played.push(action);
+		this.dispatchEvent(new CustomEvent("play", {detail: {action}}));
+
+		return action;
+	}
+
 	async resume () {
 		if (!this.queue) {
 			throw new TypeError("Nothing to resume");
 		}
 
+		this.played = this.played || [];
 		this.paused = false;
 
 		while (this.queue.length > 0) {
@@ -140,26 +169,14 @@ export default class Replayer {
 				return;
 			}
 
-			let action = this.queue.shift();
+			await this.next();
 
-			if (action.type === "pause") {
-				if (this.options.pauses === "delay") {
-					await timeout(action.delay);
-				}
-				else if (this.options.pauses === "pause") {
-					this.paused = true;
-				}
-			}
-			else {
-				await this.run(action);
-				await timeout(this.options.delay);
-			}
 		}
 	}
 
 	stop () {
 		this.paused = true;
-		this.queue = null;
+		this.queue = this.played = null;
 	}
 
 	static defaultOptions = {

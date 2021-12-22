@@ -29,7 +29,7 @@ setTimeout(recorder.start(), 1000);
 let lastAction;
 recorder.addEventListener("actionschange", async function (evt) {
 	await lastAction;
-	let action = evt.detail;
+	let action = evt.detail.action;
 
 	log.textContent = stringifyArray(recorder.actions);
 	lastAction = replayer.run(action);

@@ -28,7 +28,7 @@ export default class Recorder extends EventTarget {
 	#addAction (action, {replace} = {}) {
 		let timestamp = Date.now();
 
-		if (timestamp - this.#timestamp > this.options.pauseThreshold) {
+		if (this.options.pauseThreshold && timestamp - this.#timestamp > this.options.pauseThreshold) {
 			this.actions.push({type: "pause", delay: timestamp - this.#timestamp});
 		}
 
@@ -37,7 +37,7 @@ export default class Recorder extends EventTarget {
 		}
 
 		this.actions.push(action);
-		this.dispatchEvent(new CustomEvent("actionschange", {detail: action}));
+		this.dispatchEvent(new CustomEvent("actionschange", {detail: {action}}));
 
 		this.#timestamp = timestamp;
 	}
