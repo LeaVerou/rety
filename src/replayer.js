@@ -3,8 +3,6 @@ function timeout(ms) {
 }
 
 export default class Replayer extends EventTarget {
-	#activeEditor
-
 	constructor (editor, options = {}) {
 		super();
 
@@ -18,8 +16,24 @@ export default class Replayer extends EventTarget {
 		this.options = Object.assign(Replayer.defaultOptions, options);
 	}
 
+	#activeEditor
+
 	get editor () {
 		return this.#activeEditor ? this.editors[this.#activeEditor] : this.editors.default;
+	}
+
+	#queue
+
+	get queue () {
+		return this.#queue;
+	}
+
+	set queue (actions) {
+		this.#queue = actions.slice(); // clone, as we'll be modifying this array
+	}
+
+	get queue () {
+		return this.#queue;
 	}
 
 	async runAll (actions) {
