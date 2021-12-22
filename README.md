@@ -11,8 +11,10 @@
 
 ## What is this?
 
-Rety is a library that allows you to record the edits you make on a piece of text (usually code)
+Rety is a library that allows you to record the edits you make on one or more pieces of text (usually code)
 and replay them later to recreate the same typing flow.
+
+This is particularly useful for orchestrating live demos that run without your presence.
 
 </section>
 
@@ -90,12 +92,26 @@ Rety consists of two classes, residing in correspondingly named modules: `Record
 
 ### `Recorder` class
 
-The `Recorder` class allows you to record actions on an `<input>`, `<textarea>`, or any [recorder-compatible control](#compatible-controls).
+The `Recorder` class allows you to record actions on one or more `<input>`, `<textarea>`, or any [recorder-compatible control](#compatible-controls).
 
 ```js
 let recorder = new Recorder(source);
 recorder.start();
 ```
+
+To record actions from a single editor, `source` can be a reference to that editor.
+To record actions from multiple editors, pass in an object literal with identifiers as keys and references to the elements as values.
+
+E.g.
+
+```js
+let recorder = new Recorder({
+	css: document.querySelector("textarea#css"),
+	html: document.querySelector("textarea#html")
+});
+```
+
+The identifiers can be anything you want, e.g. to record actions in a multi-file editor environment, the ids could be the filenames.
 
 Call `recorder.start()` to start recording and `recorder.pause()` to temporarily pause recording.
 
@@ -126,13 +142,18 @@ Options:
 | Option | Default | Description |
 |---|---|---|
 | `preserveCaretChanges` | `false` | If true, will not coalesce consecutive caret position changes |
+| `pauseThreshold` | `2000` | The delay (in ms) between consecutive actions that will cause a `pause` action to be inserted. Use `0` or `false` to disable pause actions entirely. |
 
 
 ### `Replayer` class
 
 The `Replayer` class allows you to run a single action or a sequence of actions on an `<input>`, `<textarea>`, or any [replayer-compatible control](#compatible-controls).
 
-#### `new Replayer(editor [, options])`
+#### `new Replayer(dest [, options])`
+
+`dest` is the same type as the first argument to the `Recorder` constructor.
+To replay actions on a single editor element, `dest` would be a reference to that element.
+To replay actions that span multiple editors, `dest` would be an object literal that maps ids to editor elements.
 
 Options:
 
