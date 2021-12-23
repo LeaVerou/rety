@@ -1,6 +1,6 @@
 <header>
 
-<img src="logo.svg" style="max-width: 200px">
+<img src="logo.svg" style="width: 200px">
 
 # rety
 ## “Live” coding without the stress
@@ -34,6 +34,7 @@ I love live coding as a teaching tool, and over the years
 
 When combined with some kind of interactive preview,
 it allows the speaker to demonstrate not only the final state of a coding snippet, but how you get there, and what the intermediate results are.
+Live coding is to programming what a blackboard is to math or physics.
 
 However, it does create a unique challenge: My live coded slides don't make sense without me.
 This may be acceptable for a conference talk, which is usually recorded, but not in other contexts,
@@ -135,7 +136,7 @@ You can also provide options when calling `start()`:
 recorder.start({preserveCaretChanges: true});
 ```
 
-#### `new Recorder(editor [, options])`
+#### Constructor: `new Recorder(editor [, options])`
 
 Options:
 
@@ -144,12 +145,24 @@ Options:
 | `preserveCaretChanges` | `false` | If true, will not coalesce consecutive caret position changes |
 | `pauseThreshold` | `2000` | The delay (in ms) between consecutive actions that will cause a `pause` action to be inserted. Use `0` or `false` to disable pause actions entirely. |
 
+#### Methods
+
+| Member | Description |
+|---|---|
+| `recorder.start()` | Start listening to edits |
+| `recorder.pause()` | Temporarily stop listening to edits |
+
+#### Properties and accessors
+
+| Member | Description |
+|---|---|
+| `recorder.actions` | The array of actions recorded so far.
 
 ### `Replayer` class
 
 The `Replayer` class allows you to run a single action or a sequence of actions on an `<input>`, `<textarea>`, or any [replayer-compatible control](#compatible-controls).
 
-#### `new Replayer(dest [, options])`
+#### Constructor: `new Replayer(dest [, options])`
 
 `dest` is the same type as the first argument to the `Recorder` constructor.
 To replay actions on a single editor element, `dest` would be a reference to that element.
@@ -161,29 +174,23 @@ Options:
 |---|---|---|
 | `delay` | `200` | Delay between consecutive actions when `runAll()` is used |
 
-#### `async replayer.runAll(actions)`
+#### Methods
 
-Run a sequence of actions. Returns a promise that resolves when all actions have ran or the replayer has been paused.
-If another sequence of actions is currently being played, it will stop it first, then replace the rest of its queue.
+| Member | Description |
+|---|---|
+| `async replayer.runAll(actions)` | Run a sequence of actions. Returns a promise that resolves when all actions have ran or the replayer has been paused. If another sequence of actions is currently being played, it will stop it first, then replace the rest of its queue.
+| `async replayer.queueAll(actions)` | Just like `runAll()` but instead of replacing the queue, it will add the actions to the existing queue.
+| `async replayer.next()` | Runs the next action in the queue
+| `async replayer.run([action])` | Run a single action (except pauses, since this is pretty low-level and does not handle timing).
+| `replayer.pause()` | Finish the action currently executing (if any), then pause.
+| `async replayer.resume()` | Resumes playing the current queue.
 
-#### `async replayer.queueAll(actions)`
+#### Properties and Accessors
 
-Just like `runAll()` but instead of replacing the queue, it will add the actions to the queue.
-
-#### `async replayer.run(action)`
-
-Run a single action
-
-#### `replayer.pause()`
-
-Pause the sequence of actions currently running (if any).
-
-Note that pausing does not happen synchronously.
-The action currently executing will finish first, but the rest of the queue will not run (until `resume()` is called).
-
-#### `async replayer.resume()`
-
-Resumes playing the current queue.
+| Member | Description |
+|---|---|
+| `recorder.queue` | Contains the actions that have been queued up for playing, but have not been played yet. Can also be set, and the array it is set to will be (shallowly) cloned. |
+| `recorder.played` | Array with actions that have already been played from the current queue. These actions have been removed from the queue. |
 
 ### Actions
 
@@ -219,6 +226,39 @@ Actions with `type: "insertText"` are replaced by their `text` property, to cut 
 <section>
 
 ## FAQ
+
+<section id="browser-support">
+
+### What is the browser support?
+
+Generally: all modern browsers. No IE11 or pre-Chromium Edge. More details:
+
+* `Recorder` makes heavy use of [`evt.inputType`](https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/inputType) so it supports browsers that support that
+* `Replayer` makes heavy use of [`document.execCommand()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand), which limits Firefox support to Firefox 89+.
+* Both are written with well-supported modern ES features, such as [private members](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields). Since these generally have better support than `evt.inputType`, I did not bother transpiling.
+
+</section>
+
+<section id="tests">
+
+### What about unit tests?
+
+I’m still trying to decide what's the best testing framework for mocking interactions with a textarea.
+If you have suggestions, [please weigh in](https://github.com/LeaVerou/rety/issues/1)!
+
+</section>
+
+<section id="minified">
+
+### Where is the minified version?
+
+This is currently a tiny codebase, so minifying is more trouble than it’s worth.
+No, it makes zero difference if you save one KB.
+If in the future the code grows enough that minifying adds value, there will be a minified version.
+
+If you *really* can’t live with a non-minified asset, you can always use the [generated version by jsdelivr]().
+
+</section>
 
 <section id="recorder-compatible-controls">
 

@@ -246,6 +246,26 @@ md-block header {
 	display: none;
 }
 
+:is(h1, h2, h3, h4, h5, h6) {
+	position: relative;
+}
+
+a.anchor {
+	position: absolute;
+	right: 100%;
+	margin-right: .3em;
+	text-decoration: none;
+	transition: .3s;
+}
+
+:is(h1, h2, h3, h4, h5, h6):not(:is(:hover, :focus)) > a.anchor {
+	opacity: 0;
+}
+
+a.anchor:not(:focus, :hover) {
+	color: hsl(var(--gray-hs) 60%);
+}
+
 #log_container pre {
 	background: white;
 	border: hsl(var(--gray) / .3) 1px solid;
@@ -302,4 +322,8 @@ md-block header {
 .action.current {
 	--color: hsl(var(--color-hs) calc(var(--color-l) * .9));
 	outline: 2px solid red;
+}
+
+.controls {
+	margin-top: 1em;
 }
