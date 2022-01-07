@@ -62,6 +62,8 @@ body > header {
 		background: url(logo.svg) center / contain no-repeat;
 		transition: .4s;
 		filter: drop-shadow(0 0 white);
+		--offset: .2em;
+		animation: crazy-shadow 10s infinite;
 	}
 
 	@media (min-width: 1700px) {
@@ -100,9 +102,8 @@ body > header {
 		}
 	}
 
-	body > header h1:hover::before {
-		--offset: .2em;
-		animation: crazy-shadow 10s infinite ;
+	body > header h1:not(:hover)::before {
+		animation-play-state: paused;
 	}
 
 	body > header h2 {
