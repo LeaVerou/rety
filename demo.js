@@ -129,6 +129,8 @@ window.Demo = {
 	},
 
 	async runUntilNextPause () {
+		destCSS.focus();
+
 		log_container.classList.add("playing");
 
 		replayer.options.pauses = "pause";
@@ -144,6 +146,8 @@ window.Demo = {
 	},
 
 	async runAll ({pauses = "delay"} = {}) {
+		destCSS.focus();
+
 		Demo.prepare();
 
 		replayer.options.pauses = pauses;
