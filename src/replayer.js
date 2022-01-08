@@ -29,7 +29,7 @@ export default class Replayer extends EventTarget {
 	}
 
 	set queue (actions) {
-		this.#queue = actions.slice(); // clone, as we'll be modifying this array
+		this.#queue = actions?.slice() ?? null; // clone, as we'll be modifying this array
 	}
 
 	get queue () {
