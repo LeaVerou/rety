@@ -135,7 +135,7 @@ export default class Replayer extends EventTarget {
 
 		this.editor.dispatchEvent(evt);
 
-		if (this.editor !== activeElement) {
+		if (activeElement !== document.body && !Object.values(this.editors).includes(activeElement)) {
 			activeElement.focus();
 		}
 	}
