@@ -92,7 +92,7 @@ window.Demo = {
 		recorder.actions = [];
 		replayer.stop();
 
-		for (let t of $$("#demo-textareas textarea")) {
+		for (let t of $$("#demo-textareas textarea.dest")) {
 			t.value = t.textContent;
 			t.dispatchEvent(new InputEvent('input'));
 		}
