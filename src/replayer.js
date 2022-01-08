@@ -19,7 +19,11 @@ export default class Replayer extends EventTarget {
 	#activeEditor
 
 	get editor () {
-		return this.#activeEditor ? this.editors[this.#activeEditor] : this.editors.default;
+		if (this.#activeEditor) {
+			return this.editors[this.#activeEditor];
+		}
+
+		return this.editors.default || Object.values(this.editors)[0];
 	}
 
 	#queue
