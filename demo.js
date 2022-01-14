@@ -97,7 +97,7 @@ class RetyDemo extends HTMLElement {
 				await lastAction;
 				let action = evt.detail.action;
 
-				this.log.value = stringifyArray(this.recorder.actions);
+				this.log.value = formatActionsArray(this.recorder.actions);
 				this.log.dispatchEvent(new InputEvent('input'));
 
 				lastAction = this.replayer.run(action);
@@ -216,8 +216,7 @@ class RetyDemo extends HTMLElement {
 	}
 }
 
-
-function stringifyArray(arr) {
+function formatActionsArray(arr) {
 	let ret = "[\n\t";
 
 	for (let i = 0; i < arr.length; i++) {
