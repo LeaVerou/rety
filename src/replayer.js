@@ -9,6 +9,21 @@ export default class Replayer extends EventTarget {
 		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
 			this.editors = {default: editor};
 		}
+		else if (Array.isArray(editor)) {
+			if (editor.length === 1) {
+				this.editors = {default: editor[0]};
+			}
+			else {
+				// Multiple elements, we need to figure out the ids from the language-* classes
+				const langRegex = /^lang(uage)?-/;
+
+				this.editors = Object.fromEntries(editor.map(el => {
+					let langClass = [...el.classList].find(cls => langRegex.test(cls));
+					let id = langClass?.replace(langRegex, "") ?? el.className;
+					return [id, el];
+				}));
+			}
+		}
 		else { // editor is multiple elements
 			this.editors = editor;
 		}
