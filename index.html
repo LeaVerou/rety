@@ -31,33 +31,13 @@
 </nav>
 
 <main>
-	<section id="demo">
-		<div id="demo-textareas">
-			<label>
-				Make some edits here:
-				<textarea id="sourceCSS" class="prism-live language-css source"></textarea>
-				<textarea id="sourceHTML" class="prism-live language-markup source"></textarea>
-			</label>
-			<label>
-				Observe them being replayed here:
-				<textarea id="destCSS" class="prism-live language-css dest"></textarea>
-				<textarea id="destHTML" class="prism-live language-markup dest"></textarea>
-			</label>
-		</div>
-		<div class="controls">
-			<button onclick="Demo.reset()">⏏️ Reset</button>
-			<button onclick="Demo.rewind()">⏮ Rewind</button>
-			<button onclick="Demo.next()">▶️ Play next</button>
-			<button onclick="Demo.runUntilNextPause()">▶️ Play section</button>
-			<button onclick="Demo.runAll()">▶️ Play from beginning</button>
-			<button onclick="replayer.pause()">⏸ Pause</button>
-			<button onclick="replayer.resume()">▶️ Resume</button>
-		</div>
-		<p>Actions log:</p>
-		<div id="log_container">
-			<textarea id="log" class="prism-live language-actions-json"></textarea>
-		</div>
-	</section>
+	<rety-demo class="with-source">
+		<textarea class="language-css">* {
+	color: red;
+}</textarea>
+		<textarea class="language-html"><button>Click me</button>
+<button class="pink">Click me</button></textarea>
+	</rety-demo>
 
 	<md-block src="README.md" hlinks="§"></md-block>
 </main>

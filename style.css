@@ -214,24 +214,25 @@ pre[class] {
 	background: hsl(var(--gray) / .1);
 }
 
-#log {
+.log {
 	max-height: 50em;
 	overflow: auto;
 	word-break: break-all;
 }
 
-#log_container pre > code:empty::before {
+.log-container pre > code:empty::before {
 	content: "(No actions yet)";
 	opacity: .6;
 	font: italic 1rem/1.5 var(--font-body);
 }
 
-#demo-textareas {
+rety-demo.with-source .demo-textareas {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1em;
 }
 
-#demo div.prism-live {
+rety-demo div.prism-live {
 	margin-top: .3em;
 }
 
@@ -267,12 +268,12 @@ a.anchor:not(:focus, :hover) {
 	color: hsl(var(--gray-hs) 60%);
 }
 
-#log_container pre {
+.log-container pre {
 	background: white;
 	border: hsl(var(--gray) / .3) 1px solid;
 }
 
-#log_container .prism-live {
+.log-container .prism-live {
 	font-size: .75rem;
 	line-height: 1.8;
 }
