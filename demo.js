@@ -19,6 +19,7 @@ class RetyDemo extends HTMLElement {
 
 		this.dom = {};
 		this.withSource = this.classList.contains("with-source");
+		this.withPreview = this.classList.contains("with-preview");
 
 		this.dest = Object.fromEntries($$("textarea:not(.language-actions-json)", this).map(el => [Prism.util.getLanguage(el), el]));
 
@@ -52,6 +53,17 @@ class RetyDemo extends HTMLElement {
 		else {
 			this.dom.editorWrapper.innerHTML = `<label class="dest-label">
 		</label>`;
+		}
+
+		if (this.withPreview) {
+			this.preview = document.createElement("iframe");
+			this.dom.editorWrapper.appendChild(this.preview);
+
+			this.dom.editorWrapper.addEventListener("input", evt => {
+				this.#renderPreview(evt.target);
+			});
+
+			this.#renderPreview();
 		}
 
 		$(".dest-label", this.dom.editorWrapper).append(...Object.values(this.dest));
@@ -124,6 +136,48 @@ class RetyDemo extends HTMLElement {
 		if (this.log.value) {
 			this.#updateLogActions();
 		}
+	}
+
+	#renderPreview (editor) {
+		if (!this.withPreview || !this.preview) {
+			return;
+		}
+
+		if (editor?.matches(".language-css")) {
+			this.preview.contentWindow.live.textContent = this.dest.css.value;
+			return;
+		}
+		else if (editor?.matches(".language-html")) {
+			this.preview.contentDocument.body.innerHTML = this.dest.html.value;
+			return;
+		}
+
+		// Fallback to entire thing
+
+		this.preview.srcdoc = `
+		<style>
+		/* Base styles, not related to demo */
+		body {
+			font: 200% system-ui, Helvetica Neue, Segoe UI, sans-serif;
+		}
+
+		input, select, textarea, button {
+			font: inherit;
+		}
+
+		button {
+			border-radius: .3em;
+			padding: .1em .5em .15em;
+			font-weight: bold;
+			font-size: 180%;
+			margin: .2em;
+			cursor: pointer;
+		}
+		</style>
+		<style id=live>
+		${this.dest.css.value}
+		</style>
+		<body>${this.dest.html.value}</body>`;
 	}
 
 	#updateLogActions () {

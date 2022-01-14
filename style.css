@@ -226,10 +226,16 @@ pre[class] {
 	font: italic 1rem/1.5 var(--font-body);
 }
 
-rety-demo.with-source .demo-textareas {
+rety-demo:is(.with-source, .with-preview) .demo-textareas {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 1em;
+}
+
+rety-demo iframe {
+	border: 0;
+	width: 100%;
+	height: 100%;
 }
 
 rety-demo div.prism-live {

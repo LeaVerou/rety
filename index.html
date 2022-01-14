@@ -31,15 +31,9 @@
 </nav>
 
 <main>
-	<rety-demo class="with-source">
-		<textarea class="language-css">* {
-	color: red;
-}</textarea>
-		<textarea class="language-html"><button>Click me</button>
-<button class="pink">Click me</button></textarea>
-	</rety-demo>
 
-	<rety-demo>
+
+	<rety-demo id="button-demo" class="with-preview">
 		<textarea class="language-css">button {
 	border: .1em solid black;
 	background: transparent;
@@ -104,6 +98,18 @@ button.pink:hover {
 	</rety-demo>
 
 	<md-block src="README.md" hlinks="§"></md-block>
+
+	<section>
+		<h2>Real-time recording demo</h2>
+
+		<rety-demo class="with-source">
+			<textarea class="language-css">* {
+	color: red;
+}</textarea>
+			<textarea class="language-html"><button>Click me</button>
+<button class="pink">Click me</button></textarea>
+		</rety-demo>
+	</section>
 </main>
 
 <footer>
