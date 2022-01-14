@@ -44,7 +44,13 @@ export default class Recorder extends EventTarget {
 		let timestamp = Date.now();
 
 		if (this.options.pauseThreshold && timestamp - this.#timestamp > this.options.pauseThreshold && this.options.pauses !== "ignore") {
-			this.actions.push({type: "pause", delay: timestamp - this.#timestamp});
+			let delay = timestamp - this.#timestamp;
+
+			if (this.options.pauseCap) {
+				delay = Math.min(delay, this.options.pauseCap);
+			}
+
+			this.actions.push({type: "pause", delay});
 		}
 
 		if (replace) {

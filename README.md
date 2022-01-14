@@ -144,6 +144,8 @@ Options:
 |---|---|---|
 | `preserveCaretChanges` | `false` | If true, will not coalesce consecutive caret position changes |
 | `pauseThreshold` | `2000` | The delay (in ms) between consecutive actions that will cause a `pause` action to be inserted. Use `0` or `false` to disable pause actions entirely. |
+| `pauses` | `undefined` | Set to `"ignore"` to not record pauses entirely.
+| `pauseCap` | `undefined` | Set to a number of milliseconds to cap pauses to that duration.
 
 #### Methods
 
