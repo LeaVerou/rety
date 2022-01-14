@@ -169,7 +169,13 @@ export default class Replayer extends EventTarget {
 		}
 
 		this.played.push(action);
-		this.dispatchEvent(new CustomEvent("play", {detail: {action}}));
+
+		if (this.options.pauses === "ignore") {
+			return this.next();
+		}
+		else {
+			this.dispatchEvent(new CustomEvent("play", {detail: {action}}));
+		}
 
 		return action;
 	}
