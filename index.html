@@ -56,7 +56,7 @@ button.pink:hover {
 }</textarea>
 		<textarea class="language-html"><button>Click me</button>
 <button class="pink">Click me</button></textarea>
-		<textarea class="language-actions-json">[
+		<textarea class="language-actions-json" id="foobar">[
 	{"type":"caret","start":63,"end":63,"editor":"css"},
 	"-", "-",
 	{"type":"caret","start":78,"end":78},
@@ -95,6 +95,16 @@ button.pink:hover {
 	"-", "-", "c", "o", "l", "o", "r", ":", " ", "b", "l", "u", "e"
 ]
 		</textarea>
+		<style class="demo" media="not all">
+			button {
+				border-radius: .3em;
+				padding: .1em .5em .15em;
+				font-weight: bold;
+				font-size: 180%;
+				margin: .2em;
+				cursor: pointer;
+			}
+		</style>
 	</rety-demo>
 
 	<md-block src="README.md" hlinks="§"></md-block>
@@ -103,11 +113,20 @@ button.pink:hover {
 		<h2>Real-time recording demo</h2>
 
 		<rety-demo class="with-source">
-			<textarea class="language-css">* {
+			<div class="demo-textareas">
+				<label class="source-label">
+					Make some edits here:
+					<textarea class="language-css">* {
 	color: red;
 }</textarea>
-			<textarea class="language-html"><button>Click me</button>
+				<textarea class="language-html" style="--max-height: 3em;"><button>Click me</button>
 <button class="pink">Click me</button></textarea>
+				</label>
+				<label class="dest-label">
+					Observe them being replayed here:
+
+				</label>
+			</div>
 		</rety-demo>
 	</section>
 </main>

@@ -1,5 +1,6 @@
 import Recorder from "./src/recorder.js";
 import Replayer from "./src/replayer.js";
+import LiveDemo from "https://inspirejs.org/src/plugins/live-demo/live-demo.js";
 
 function $$(selector, context = document) {
 	return Array.from(context.querySelectorAll(selector));
@@ -23,9 +24,14 @@ class RetyDemo extends HTMLElement {
 
 		this.dest = Object.fromEntries($$("textarea:not(.language-actions-json)", this).map(el => [Prism.util.getLanguage(el), el]));
 
-		this.dom.editorWrapper = document.createElement("div");
-		this.dom.editorWrapper.classList.add("demo-textareas");
-		this.appendChild(this.dom.editorWrapper);
+
+		this.dom.editorWrapper = $(".demo-textareas", this);
+
+		if (!this.dom.editorWrapper) {
+			this.dom.editorWrapper = document.createElement("div");
+			this.dom.editorWrapper.classList.add("demo-textareas");
+			this.appendChild(this.dom.editorWrapper);
+		}
 
 		if (this.withSource) {
 			this.sources = {}
@@ -37,41 +43,20 @@ class RetyDemo extends HTMLElement {
 				this.sources[lang] = source;
 			}
 
-			this.dom.editorWrapper.innerHTML = `
-			<label class="source-label">
-				Make some edits here:
-			</label>
-			<label class="dest-label">
-				Observe them being replayed here:
-			</label>`;
-
-			$(".source-label", this.dom.editorWrapper).append(...Object.values(this.sources));
+			($(".source-label", this.dom.editorWrapper) || this.dom.editorWrapper).append(...Object.values(this.sources));
 
 			this.recorder = new Recorder(this.sources);
 			setTimeout(() => this.recorder.start(), 1000);
 		}
-		else {
-			this.dom.editorWrapper.innerHTML = `<label class="dest-label">
-		</label>`;
-		}
+
+		($(".dest-label", this.dom.editorWrapper) || this.dom.editorWrapper).append(...Object.values(this.dest));
+
+		this.dom.editorWrapper.append($("style.demo", this) || "");
 
 		if (this.withPreview) {
-			this.preview = document.createElement("iframe");
-			this.dom.editorWrapper.appendChild(this.preview);
-
-			this.dom.editorWrapper.addEventListener("input", evt => {
-				this.#renderPreview(evt.target);
+			this.liveDemo = new LiveDemo(this.dom.editorWrapper, {
+				isolated: true
 			});
-
-			this.#renderPreview();
-		}
-
-		$(".dest-label", this.dom.editorWrapper).append(...Object.values(this.dest));
-
-		for (let t of $$("textarea", this)) {
-			t.classList.add("prism-live");
-			t.value = t.textContent;
-			t.dispatchEvent(new InputEvent('input'));
 		}
 
 		this.replayer = new Replayer(this.dest);
@@ -101,6 +86,16 @@ class RetyDemo extends HTMLElement {
 		else {
 			this.dom.log_container.innerHTML = `<textarea class="log language-actions-json prism-live"></textarea>`;
 			this.log = $(".log", this.dom.log_container);
+		}
+
+		for (let t of $$("textarea", this)) {
+			t.classList.add("prism-live");
+			t.value = t.textContent;
+			t.dispatchEvent(new InputEvent('input'));
+
+			if (Prism.Live) {
+				Prism.Live.create(t);
+			}
 		}
 
 		if (this.recorder) {
@@ -136,48 +131,6 @@ class RetyDemo extends HTMLElement {
 		if (this.log.value) {
 			this.#updateLogActions();
 		}
-	}
-
-	#renderPreview (editor) {
-		if (!this.withPreview || !this.preview) {
-			return;
-		}
-
-		if (editor?.matches(".language-css")) {
-			this.preview.contentWindow.live.textContent = this.dest.css.value;
-			return;
-		}
-		else if (editor?.matches(".language-html")) {
-			this.preview.contentDocument.body.innerHTML = this.dest.html.value;
-			return;
-		}
-
-		// Fallback to entire thing
-
-		this.preview.srcdoc = `
-		<style>
-		/* Base styles, not related to demo */
-		body {
-			font: 200% system-ui, Helvetica Neue, Segoe UI, sans-serif;
-		}
-
-		input, select, textarea, button {
-			font: inherit;
-		}
-
-		button {
-			border-radius: .3em;
-			padding: .1em .5em .15em;
-			font-weight: bold;
-			font-size: 180%;
-			margin: .2em;
-			cursor: pointer;
-		}
-		</style>
-		<style id=live>
-		${this.dest.css.value}
-		</style>
-		<body>${this.dest.html.value}</body>`;
 	}
 
 	#updateLogActions () {
@@ -238,6 +191,7 @@ class RetyDemo extends HTMLElement {
 			await this.replayer.resume();
 		}
 		else {
+			// Hasn't started yet
 			await this.runAll({pauses: "pause"})
 		}
 
