@@ -192,6 +192,7 @@ Options:
 | Member | Description |
 |---|---|
 | `recorder.queue` | Contains the actions that have been queued up for playing, but have not been played yet. Can also be set, and the array it is set to will be (shallowly) cloned. |
+| `recorder.paused` | `true` if the Replayer is paused or stopped, `false` if playing, `undefined` if the Replayer has not yet been used in any way. |
 | `recorder.played` | Array with actions that have already been played from the current queue. These actions have been removed from the queue. |
 
 ### Actions
