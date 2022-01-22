@@ -154,6 +154,11 @@ export default class Replayer extends EventTarget {
 
 		this.editor.dispatchEvent(evt);
 
+		// Chrome does not scroll to the editing position by default
+		// Blurring and refocusing the editor fixes this
+		this.editor.blur();
+		this.editor.focus();
+
 		if (activeElement !== document.body && !Object.values(this.editors).includes(activeElement)) {
 			activeElement.focus();
 		}
