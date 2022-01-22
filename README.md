@@ -234,7 +234,7 @@ Actions with `type: "insertText"` are replaced by their `text` property, to cut 
 
 ### How do I record a demo from an arbitrary page, e.g. [a live coded slide](https://projects.verou.me/talks/css-variables/#button)?
 
-Drag this bookmarklet to your bookmarks toolbar: <a href="javascript:(function(){import('https://rety.verou.me/src/bookmarklet.js').then(m => m.default())})()">⏺ Rety</a>.
+Drag this bookmarklet to your bookmarks toolbar: <a href="javascript:(function(){import('https://rety.verou.me/plugin/bookmarklet.js').then(m => m.default())})()">⏺ Rety</a>.
 Then, when you’re ready to record, press it. It will insert a button at the top right corner that you press to stop recording.
 When you stop recording, it will log the actions it recorded in the console, for your copying convenience. It will log them in two ways: both as an object, as well as a minified JSON serialization.
 Unfortunately, it does not yet allow customizing recording options.
