@@ -1,10 +1,10 @@
 /*
 Used via bookmarklet with:
-javascript:(function(){import('https://rety.verou.me/src/bookmarklet.js').then(m => m.default())})()
-javascript:(function(){import('http://localhost:8002/rety/src/bookmarklet.js').then(m => m.default())})()
+javascript:(function(){import('https://rety.verou.me/plugins/bookmarklet.js').then(m => m.default())})()
+javascript:(function(){import('http://localhost:8002/rety/plugins/bookmarklet.js').then(m => m.default())})()
 */
 
-import Recorder from "./recorder.js";
+import Recorder from "../src/recorder.js";
 
 export default function record() {
 	// Get visible textareas
