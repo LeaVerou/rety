@@ -10,11 +10,28 @@ export default function record() {
 	// Get visible textareas
 	let textareas = [...document.querySelectorAll("[class^='language-']:is(input, textarea)")].filter(t => {
 		let rect = t.getBoundingClientRect();
-		return rect.width > 0 || rect.height > 0;
+		if (rect.width === 0 || rect.height === 0) {
+			return false;
+		}
+
+		// Check visibility
+		let el = t;
+
+		while (el) {
+			let cs = getComputedStyle(t);
+
+			if (cs.visibility === "hidden" || cs.display === "none") {
+				return false;
+			}
+
+			el = el.parentElement;
+		}
+
+		return true;
 	});
 
 	if (textareas.length === 0) {
-		console.error(`No elements found to record edits on`);
+		console.error("No elements found to record edits on");
 		return;
 	}
 
