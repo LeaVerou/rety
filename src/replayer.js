@@ -34,6 +34,11 @@ export default class Replayer extends EventTarget {
 	#activeEditor
 
 	get editor () {
+		let editors = Object.values(this.editors);
+		if (editors.length === 1) {
+			return editors[0];
+		}
+
 		if (this.#activeEditor) {
 			return this.editors[this.#activeEditor];
 		}
