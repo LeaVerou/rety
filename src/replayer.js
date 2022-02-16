@@ -28,7 +28,7 @@ export default class Replayer extends EventTarget {
 			this.editors = editor;
 		}
 
-		this.options = Object.assign(Replayer.defaultOptions, options);
+		this.options = Object.assign({}, Replayer.defaultOptions, options);
 	}
 
 	#activeEditor
