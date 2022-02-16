@@ -1,3 +1,4 @@
+console.log("new rety")
 function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -46,6 +47,19 @@ export default class Replayer extends EventTarget {
 		return this.editors.default || Object.values(this.editors)[0];
 	}
 
+	// Expand macros like repeat
+	static #processActions (actions) {
+		return actions.flatMap(action => {
+			if (action.repeat) {
+				let times = action.repeat;
+				delete action.repeat;
+				return Array(times).fill(action);
+			}
+
+			return action;
+		});
+	}
+
 	#queue
 
 	get queue () {
@@ -53,7 +67,8 @@ export default class Replayer extends EventTarget {
 	}
 
 	set queue (actions) {
-		this.#queue = actions?.slice() ?? null; // clone, as we'll be modifying this array
+		 // also clones, as we'll be modifying this array
+		this.#queue = actions? Replayer.#processActions(actions) : null;
 	}
 
 	get queue () {
@@ -71,6 +86,7 @@ export default class Replayer extends EventTarget {
 			this.queue = [];
 		}
 
+		actions = Replayer.#processActions(actions);
 		this.queue.push(...actions);
 		return this.resume();
 	}

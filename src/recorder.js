@@ -57,7 +57,17 @@ export default class Recorder extends EventTarget {
 			this.actions.pop();
 		}
 
-		this.actions.push(action);
+		let lastAction = this.actions[this.actions.length - 1];
+
+		if (lastAction && Recorder.actionsEqual(lastAction, action)) {
+			// Merge consecutive actions
+			lastAction.repeat = (lastAction.repeat || 1) + 1;
+		}
+		else {
+			this.actions.push(action);
+		}
+
+
 		this.dispatchEvent(new CustomEvent("actionschange", {detail: {action}}));
 
 		this.#timestamp = timestamp;
@@ -164,6 +174,21 @@ export default class Recorder extends EventTarget {
 				this.editors[id].removeEventListener(evt, this);
 			}
 		}
+	}
+
+	static actionsEqual(action1, action2) {
+		if (!action1 || !action2) {
+			return false;
+		}
+
+		let keys1 = Object.keys(action1);
+		let keys2 = Object.keys(action2);
+
+		if (JSON.stringify(keys1) !== JSON.stringify(keys2) || keys1.some(key => action1[key] !== action2[key])) {
+			return false;
+		}
+
+		return true;
 	}
 
 	static defaultOptions = {
