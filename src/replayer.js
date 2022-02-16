@@ -1,4 +1,3 @@
-console.log("new rety")
 function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
