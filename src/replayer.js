@@ -55,6 +55,11 @@ export default class Replayer extends EventTarget {
 				return Array(times).fill(action);
 			}
 
+			if (action.type === "insertText" && action.split) {
+				delete action.split;
+				return action.text.split("").map(character => Object.assign({}, action, {text: character}));
+			}
+
 			return action;
 		});
 	}

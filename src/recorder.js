@@ -58,15 +58,38 @@ export default class Recorder extends EventTarget {
 		}
 
 		let lastAction = this.actions[this.actions.length - 1];
+		let added;
 
-		if (lastAction && Recorder.actionsEqual(lastAction, action)) {
-			// Merge consecutive actions
-			lastAction.repeat = (lastAction.repeat || 1) + 1;
+		if (lastAction) {
+			if (typeof lastAction === "string") {
+				// Expand compact insertText action
+				lastAction = {type: "insertText", text: lastAction};
+			}
+
+			if (action.type === "insertText" && lastAction.type === "insertText"
+				&& (lastAction.split || lastAction.text.length === 1) && !lastAction.editor) {
+				this.actions[this.actions.length - 1] = {
+					type: "insertText",
+					text: lastAction.text + action.text,
+					split: true
+				};
+				added = true;
+			}
+			else if (Recorder.actionsEqual(lastAction, action)) {
+				// Merge consecutive actions
+				lastAction.repeat = (lastAction.repeat || 1) + 1;
+				added = true;
+			}
 		}
-		else {
+
+		if (!added) {
+			// Compact insertText
+			if (action.type === "insertText" && action.text) {
+				action = action.text;
+			}
+
 			this.actions.push(action);
 		}
-
 
 		this.dispatchEvent(new CustomEvent("actionschange", {detail: {action}}));
 
@@ -116,11 +139,6 @@ export default class Recorder extends EventTarget {
 			else if (/^delete(Word|(Soft|Hard)Line)(Forward|Backward)/.test(type)) {
 				// Store caret position so we know until which point to delete
 				action.after = [start, end];
-			}
-
-			// Compact insertText
-			if (action.type === "insertText" && action.text) {
-				action = action.text;
 			}
 
 			this.#addAction(action);
