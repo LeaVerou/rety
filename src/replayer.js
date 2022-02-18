@@ -210,7 +210,13 @@ export default class Replayer extends EventTarget {
 		}
 		else {
 			await this.run(action);
-			await timeout(this.options.delay);
+
+			if (this.options.delay > 0) {
+				// Vary delay ± 15% to create the illusion of organic typing
+				let deviation = .15;
+				let delay = this.options.delay * Math.random() * deviation * 2 + this.options.delay * (1 - deviation);
+				await timeout(delay);
+			}
 		}
 
 		this.played.push(action);
@@ -249,7 +255,7 @@ export default class Replayer extends EventTarget {
 	}
 
 	static defaultOptions = {
-		delay: 200,
+		delay: 140,
 		pauses: "delay"
 	}
 }
