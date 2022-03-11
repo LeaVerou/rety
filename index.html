@@ -58,25 +58,27 @@ button.pink:hover {
 <button class="pink">Click me</button></textarea>
 		<textarea class="language-actions-json" id="foobar">[
 	{"type":"caret","start":63,"end":63,"editor":"css"},
-	"-", "-",
+	{"type":"insertText","text":"--","split":true},
 	{"type":"caret","start":78,"end":78},
-	"\n", "\t", "c", "o", "l", "o", "r", ":", " ", "v", "a", "r", "()",
+	{"type":"insertText","text":"\n\tcolor: var()","split":true},
 	{"type":"caret","start":91,"end":91},
-	"-", "-", "c", "o", "l", "o", "r",
+	{"type":"insertText","text":"--color","split":true},
 	{"type":"caret","start":99,"end":99},
 	";",
 	{"type":"pause","delay":2680},
 	{"type":"caret","start":29,"end":34},
-	"v", "a", "r", "()",
+	{"type":"insertText","text":"var","split":true},
+	"()",
 	{"type":"caret","start":33,"end":33},
-	"-", "-", "c", "o", "l", "o", "r",
+	{"type":"insertText","text":"--color","split":true},
 	{"type":"caret","start":139,"end":144},
-	"v", "a", "r", "()",
+	{"type":"insertText","text":"var","split":true},
+	"()",
 	{"type":"caret","start":143,"end":143},
-	"-", "-", "c", "o", "l", "o", "r",
+	{"type":"insertText","text":"--color","split":true},
 	{"type":"pause","delay":2461},
 	{"type":"caret","start":207,"end":207},
-	"-", "-",
+	{"type":"insertText","text":"--","split":true},
 	{"type":"caret","start":186,"end":207},
 	{"type":"deleteContentBackward"},
 	{"type":"pause","delay":2174},
@@ -89,10 +91,10 @@ button.pink:hover {
 	"\n",
 	"<button>Click me</button>",
 	{"type":"caret","start":72,"end":72},
-	" ", "s", "t", "y", "l", "e", "=",
+	{"type":"insertText","text":" style=","split":true},
 	"\"\"",
 	{"type":"caret","start":80,"end":80},
-	"-", "-", "c", "o", "l", "o", "r", ":", " ", "b", "l", "u", "e"
+	{"type":"insertText","text":"--color: blue","split":true}
 ]
 		</textarea>
 		<style class="demo" media="not all">
