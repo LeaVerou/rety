@@ -2,6 +2,10 @@ import Recorder from "./src/recorder.js";
 import Replayer from "./src/replayer.js";
 import LiveDemo from "https://inspirejs.org/src/plugins/live-demo/live-demo.js";
 
+// Exose as globals for experimentation
+window.Recorder = Recorder;
+window.Replayer = Replayer;
+
 function $$(selector, context = document) {
 	return Array.from(context.querySelectorAll(selector));
 }
