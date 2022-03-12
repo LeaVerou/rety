@@ -1,6 +1,6 @@
 # Rety Actions
 
-Rety records your typing as a sequence of *actions* and creates a *script*.
+Rety records your typing as a sequence of *actions* and creates a *script*, which is a sequence of actions.
 These actions are just JSON objects and the *script* is an array of actions in order.
 Rety tries really hard to produce a script that is hand editable,
 so that you can go in and correct any mistakes you made during the recording without having to re-record yourself.
@@ -21,7 +21,7 @@ This is what a Rety script looks like:
 ```
 
 The only field that all types of actions share is `"type"`.
-This tells Rety what this action *does*.
+This tells Rety what type of editing this action *represents*.
 The other properties are different depending on the type of action.
 Below we will explore what type of editing action each action type describes and what its properties mean.
 
