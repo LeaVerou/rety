@@ -94,3 +94,15 @@ They are a last resort, when Rety does not have enough information to do somethi
 If you see `replace` actions in your Rety scripts, investigate what is causing them.
 In most cases it's another script modifying the editor's contents firing synthetic `input` events that are not detailed enough.
 File an issue in the script's repo and ask that they include appropriate `inputType` properties in the events they are firing.
+
+## `key` actions
+
+This represents a keystroke that does not produce output by default (e.g. a keyboard shortcut to trigger rendering).
+
+By default, Rety does not record any `key` actions.
+These are custom actions that you can instruct Rety’s `Recorder` to capture.
+If Rety’s `Replayer` finds any `key` actions, it fires a synthetic event to simulate that keystroke.
+
+### Properties
+
+* `key`, `code`, `altKey`, `shiftKey`, `ctrlKey`, `metaKey` all correspond to properties of the event object

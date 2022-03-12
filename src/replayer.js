@@ -163,6 +163,11 @@ export default class Replayer extends EventTarget {
 				this.editor.value = action.text;
 			}
 		}
+		else if (type === "key") {
+			let {type, event, ...options} = action;
+			let evt = new KeyboardEvent(event, options);
+			this.editor.dispatchEvent(evt);
+		}
 
 		let evt;
 

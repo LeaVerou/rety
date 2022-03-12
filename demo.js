@@ -49,7 +49,9 @@ class RetyDemo extends HTMLElement {
 
 			($(".source-label", this.dom.editorWrapper) || this.dom.editorWrapper).append(...Object.values(this.sources));
 
-			this.recorder = new Recorder(this.sources);
+			this.recorder = new Recorder(this.sources, {
+				keys: "Ctrl + Enter"
+			});
 			setTimeout(() => this.recorder.start(), 1000);
 		}
 

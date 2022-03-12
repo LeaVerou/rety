@@ -146,6 +146,12 @@ Options:
 | `pauseThreshold` | `2000` | The delay (in ms) between consecutive actions that will cause a `pause` action to be inserted. Use `0` or `false` to disable pause actions entirely. |
 | `pauses` | `undefined` | Set to `"ignore"` to not record pauses entirely.
 | `pauseCap` | `undefined` | Set to a number of milliseconds to cap pauses to that duration.
+| `keys` | `undefined` | Keystrokes to record, see [How do I record custom keystrokes that don’t produce output?](#record-custom-keystrokes)
+
+To record custom keystrokes (that don’t result in output), you’d use the `keys` parameter with strings like `"Ctrl + Shift + E"`.
+You can specify one or more keystrokes as an array.
+By default the `keyup` event is monitored. You can specify a different event by using an object instead of a string,
+e.g. `{key: "Ctrl + Shift + E", event: "keydown"}`.
 
 #### Methods
 
@@ -293,6 +299,18 @@ If you *really* can’t live with a non-minified asset, you can always use the [
 `Replayer` will work fine with any control that meets the following requirements:
 - Implements writable `selectionStart` and `selectionEnd` properties
 - Works well with `document.execCommand()` (the actions used are `insertText`, `delete`, `forwardDelete`, `undo`, `redo`)
+
+</section>
+
+<section id="record-custom-keystrokes">
+
+### How do I record custom keystrokes that don’t produce output?
+
+When constructing `Recorder` objects, you can pass in a `keys` parameter, which is an array of custom keystrokes to record.
+These keystrokes can be specified as strings, like `Ctrl + Enter` or objects (like `{key: "Ctrl + Enter", event: "keydown"}`), if you also want to specify an event (other than `keyup` which is the default).
+
+`Recorder` will then record [`key` actions](#key-actions) that match this keystroke.
+`Replayer` does not need to be taught about custom keystrokes, it replicates any `key` action it finds.
 
 </section>
 

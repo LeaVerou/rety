@@ -1,4 +1,4 @@
-const eventsMonitored = ["input", "beforeinput", "select", "paste", "keyup", "pointerdown", "pointerup"];
+const eventsMonitored = ["input", "beforeinput", "select", "paste", "keyup", "keydown", "pointerdown", "pointerup"];
 
 export default class Recorder extends EventTarget {
 	#clipboardText
@@ -163,6 +163,42 @@ export default class Recorder extends EventTarget {
 				}
 
 				this.#addAction(action, { replace });
+			}
+		}
+
+		if (this.options.keys && /^key(down|up)$/.test(evt.type)) {
+			let keys = this.options.keys = Array.isArray(this.options.keys) ? this.options.keys : [this.options.keys];
+
+			// Map keys to functions that test if an event matches the specified keystroke
+			// Why don’t we just do this in the constructor? Because options.keys may be set at any point
+			for (let i=0; i<keys.length; i++) {
+				let keystroke = keys[i];
+
+				if (typeof keystroke !== "function") {
+					if (typeof keystroke === "string") {
+						keystroke = {keys: keystroke};
+					}
+
+					if (typeof keystroke.keys === "string") {
+						keystroke.keys = keystroke.keys.split(/\s*\+\s*/).map(key => key.toLowerCase());
+					}
+
+					keys[i] = evt => {
+						let matchesEvent = (!keystroke.event && evt.type === "keyup") || keystroke.event === evt.type;
+						let matchesKeys = keystroke.keys.every(key => {
+							return evt.key.toLowerCase() === key || evt[key + "Key"];
+						});
+
+						return matchesEvent && matchesKeys;
+					}
+				}
+			}
+
+			// Does this event match any of the keystrokes?
+			if (keys.some(keystroke => keystroke(evt))) {
+				let action = {type: "key", event: evt.type, key: evt.key, code: evt.code};
+				["alt", "shift", "ctrl", "meta"].forEach(modifier => action[modifier + "Key"] = evt[modifier + "Key"]);
+				this.#addAction(action);
 			}
 		}
 

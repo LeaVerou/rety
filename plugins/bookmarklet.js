@@ -36,7 +36,8 @@ export default function record() {
 	}
 
 	let recorder = new Recorder(textareas, {
-		pauseCap: 5000
+		pauseCap: 5000,
+		keys: {keys: "Ctrl + Enter", event: "keydown"}
 	});
 
 	document.body.insertAdjacentHTML("beforeend", `<button id="rety_stop" style="position: fixed; top: 16px; right: 16px; z-index: 99999">⏹ Stop recording</button>`);
