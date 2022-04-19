@@ -256,6 +256,6 @@ export default class Recorder extends EventTarget {
 
 function isCharacterByCharacter(action) {
 	return action.type === "insertText"
-		&& (action.text.length === 1 || action.split)
+		&& (action.text?.length === 1 || action.split)
 		&& !action.editor;
 }
