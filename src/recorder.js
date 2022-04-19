@@ -40,6 +40,10 @@ export default class Recorder extends EventTarget {
 		return this.#activeEditor ? this.editors[this.#activeEditor] : this.editors.default;
 	}
 
+	get editorCount () {
+		return Object.keys(this.editors).length;
+	}
+
 	#addAction (action, {replace} = {}) {
 		let timestamp = Date.now();
 
@@ -148,7 +152,7 @@ export default class Recorder extends EventTarget {
 			if (this.#selectionStart !== start || this.#selectionEnd !== end || this.#activeEditor !== previousEditor) {
 				let action = {type: "caret", start, end};
 
-				if (this.#activeEditor !== previousEditor) {
+				if (this.#activeEditor !== previousEditor && this.editorCount > 1) {
 					action.editor = this.#activeEditor;
 				}
 
