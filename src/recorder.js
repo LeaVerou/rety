@@ -62,12 +62,11 @@ export default class Recorder extends EventTarget {
 
 		if (lastAction) {
 			if (typeof lastAction === "string") {
-				// Expand compact insertText action
+				// Expand compact insertText action so we can compare it to the new action
 				lastAction = {type: "insertText", text: lastAction};
 			}
 
-			if (action.type === "insertText" && lastAction.type === "insertText"
-				&& (lastAction.split || lastAction.text.length === 1) && !lastAction.editor) {
+			if (isCharacterByCharacter(action) && isCharacterByCharacter(lastAction)) {
 				this.actions[this.actions.length - 1] = {
 					type: "insertText",
 					text: lastAction.text + action.text,
@@ -249,4 +248,10 @@ export default class Recorder extends EventTarget {
 		preserveCaretChanges: false,
 		pauseThreshold: 2000
 	}
+}
+
+function isCharacterByCharacter(action) {
+	return action.type === "insertText"
+		&& (action.text.length === 1 || action.split)
+		&& !action.editor;
 }
