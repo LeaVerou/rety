@@ -22,6 +22,7 @@ export default class Replayer extends EventTarget {
 					let id = langClass?.replace(langRegex, "") ?? el.className;
 					return [id, el];
 				}));
+
 			}
 		}
 		else { // editor is multiple elements
@@ -97,7 +98,12 @@ export default class Replayer extends EventTarget {
 
 	async run (action = this.queue.shift()) {
 		if (action.editor) {
-			this.#activeEditor = action.editor;
+			if (action.editor in this.editors) {
+				this.#activeEditor = action.editor;
+			}
+			else {
+				throw new ReferenceError(`Unknown editor "${action.editor}". Known editors: ${Object.keys(this.editors).join(", ")}`);
+			}
 		}
 
 		let activeElement = document.activeElement;
