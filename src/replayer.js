@@ -123,8 +123,20 @@ export default class Replayer extends EventTarget {
 			this.editor.selectionStart = start;
 		}
 
-		if (end !== undefined) {
-			this.editor.selectionEnd = end;
+		if (start !== undefined && end !== undefined && start !== end && this.options.animated_selection) {
+			// Animated text selection to look more realistic
+			let sign = start < end ? 1 : -1;
+			let selectionLength = Math.abs(end - start);
+			let multiplier = selectionLength < 10? 2 : 3;
+			for (let i = start; (i - end) * sign <= 0; i += sign) {
+				this.editor.selectionEnd = i;
+				await timeout(multiplier * this.options.delay / selectionLength);
+			}
+		}
+		else {
+			if (end !== undefined) {
+				this.editor.selectionEnd = end;
+			}
 		}
 
 		if (type === "insertText" || type === "insertFromPaste") {
@@ -267,6 +279,7 @@ export default class Replayer extends EventTarget {
 
 	static defaultOptions = {
 		delay: 140,
-		pauses: "delay"
+		pauses: "delay",
+		animated_selection: true
 	}
 }
