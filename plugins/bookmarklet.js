@@ -6,7 +6,7 @@ javascript:(function(){import('http://localhost:8002/rety/plugins/bookmarklet.js
 
 import Recorder from "../src/recorder.js";
 
-export default function record() {
+export default function record () {
 	// Get visible textareas
 	let textareas = [...document.querySelectorAll("[class^='language-']:is(input, textarea)")].filter(t => {
 		let rect = t.getBoundingClientRect();
