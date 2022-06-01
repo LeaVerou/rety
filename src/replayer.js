@@ -1,3 +1,5 @@
+import * as util from "./util.js";
+
 function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -6,28 +8,7 @@ export default class Replayer extends EventTarget {
 	constructor (editor, options = {}) {
 		super();
 
-		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
-			this.editors = {default: editor};
-		}
-		else if (Array.isArray(editor)) {
-			if (editor.length === 1) {
-				this.editors = {default: editor[0]};
-			}
-			else {
-				// Multiple elements, we need to figure out the ids from the language-* classes
-				const langRegex = /^lang(uage)?-/;
-
-				this.editors = Object.fromEntries(editor.map(el => {
-					let langClass = [...el.classList].find(cls => langRegex.test(cls));
-					let id = langClass?.replace(langRegex, "") ?? el.className;
-					return [id, el];
-				}));
-
-			}
-		}
-		else { // editor is multiple elements
-			this.editors = editor;
-		}
+		this.editors = util.getEditors(editor);
 
 		this.options = Object.assign({}, Replayer.defaultOptions, options);
 	}
@@ -47,24 +28,6 @@ export default class Replayer extends EventTarget {
 		return this.editors.default || Object.values(this.editors)[0];
 	}
 
-	// Expand macros like repeat
-	static #processActions (actions) {
-		return actions.flatMap(action => {
-			if (action.repeat) {
-				let times = action.repeat;
-				delete action.repeat;
-				return Array(times).fill(action);
-			}
-
-			if (action.type === "insertText" && action.split) {
-				delete action.split;
-				return action.text.split("").map(character => Object.assign({}, action, {text: character}));
-			}
-
-			return action;
-		});
-	}
-
 	#queue
 
 	get queue () {
@@ -73,7 +36,7 @@ export default class Replayer extends EventTarget {
 
 	set queue (actions) {
 		 // also clones, as we'll be modifying this array
-		this.#queue = actions? Replayer.#processActions(actions) : null;
+		this.#queue = actions? util.unpackActions(actions) : null;
 	}
 
 	get queue () {
@@ -91,7 +54,7 @@ export default class Replayer extends EventTarget {
 			this.queue = [];
 		}
 
-		actions = Replayer.#processActions(actions);
+		actions = util.unpackActions(actions);
 		this.queue.push(...actions);
 		return this.resume();
 	}

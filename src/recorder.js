@@ -1,3 +1,5 @@
+import * as util from "./util.js";
+
 const eventsMonitored = ["input", "beforeinput", "select", "paste", "keyup", "keydown", "pointerdown", "pointerup"];
 
 export default class Recorder extends EventTarget {
@@ -10,27 +12,7 @@ export default class Recorder extends EventTarget {
 	constructor (editor, options = {}) {
 		super();
 
-		if (editor.nodeType === Node.ELEMENT_NODE) { // editor is a single element
-			this.editors = {default: editor};
-		}
-		else if (Array.isArray(editor)) {
-			if (editor.length === 1) {
-				this.editors = {default: editor[0]};
-			}
-			else {
-				// Multiple elements, we need to figure out the ids from the language-* classes
-				const langRegex = /^lang(uage)?-/;
-
-				this.editors = Object.fromEntries(editor.map(el => {
-					let langClass = [...el.classList].find(cls => langRegex.test(cls));
-					let id = langClass?.replace(langRegex, "") ?? el.className;
-					return [id, el];
-				}));
-			}
-		}
-		else { // editor is multiple elements
-			this.editors = editor;
-		}
+		this.editors = util.getEditors(editor);
 
 		this.options = Object.assign(Recorder.defaultOptions, options);
 		this.actions = [];
@@ -61,38 +43,15 @@ export default class Recorder extends EventTarget {
 			this.actions.pop();
 		}
 
-		let lastAction = this.actions[this.actions.length - 1];
-		let added;
+		let lastAction;
 
-		if (lastAction) {
-			if (typeof lastAction === "string") {
-				// Expand compact insertText action so we can compare it to the new action
-				lastAction = {type: "insertText", text: lastAction};
-			}
-
-			if (isCharacterByCharacter(action) && isCharacterByCharacter(lastAction)) {
-				this.actions[this.actions.length - 1] = {
-					type: "insertText",
-					text: lastAction.text + action.text,
-					split: true
-				};
-				added = true;
-			}
-			else if (Recorder.actionsEqual(lastAction, action)) {
-				// Merge consecutive actions
-				lastAction.repeat = (lastAction.repeat || 1) + 1;
-				added = true;
-			}
+		if (this.actions.length > 0) {
+			lastAction = this.actions.pop();
 		}
 
-		if (!added) {
-			// Compact insertText
-			if (action.type === "insertText" && action.text) {
-				action = action.text;
-			}
+		let actions = util.packActions([action, lastAction]);
 
-			this.actions.push(action);
-		}
+		this.actions.push(...actions);
 
 		this.dispatchEvent(new CustomEvent("actionschange", {detail: {action}}));
 
@@ -233,29 +192,8 @@ export default class Recorder extends EventTarget {
 		}
 	}
 
-	static actionsEqual(action1, action2) {
-		if (!action1 || !action2) {
-			return false;
-		}
-
-		let keys1 = Object.keys(action1);
-		let keys2 = Object.keys(action2);
-
-		if (JSON.stringify(keys1) !== JSON.stringify(keys2) || keys1.some(key => action1[key] !== action2[key])) {
-			return false;
-		}
-
-		return true;
-	}
-
 	static defaultOptions = {
 		preserveCaretChanges: false,
 		pauseThreshold: 2000
 	}
-}
-
-function isCharacterByCharacter(action) {
-	return action.type === "insertText"
-		&& (action.text?.length === 1 || action.split)
-		&& !action.editor;
 }
