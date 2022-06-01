@@ -149,6 +149,13 @@ export default class Replayer extends EventTarget {
 			let evt = new KeyboardEvent(event, options);
 			this.editor.dispatchEvent(evt);
 		}
+		else if (type in Replayer.customActions) {
+			Replayer.customActions[type]({
+				replayer: this,
+				action,
+				editor: this.editor
+			});
+		}
 
 		let evt;
 
@@ -245,4 +252,6 @@ export default class Replayer extends EventTarget {
 		pauses: "delay",
 		animated_selection: true
 	}
+
+	static customActions = {}
 }
