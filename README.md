@@ -16,6 +16,8 @@ and replay them later to recreate the same typing flow.
 
 This is particularly useful for orchestrating live demos that run without your presence.
 
+It does not come with any particular UI, the UI is up to you. The UI you see in these demos is not part of Rety.
+
 </section>
 
 <section>
