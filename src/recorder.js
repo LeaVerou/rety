@@ -26,7 +26,7 @@ export default class Recorder extends EventTarget {
 		return Object.keys(this.editors).length;
 	}
 
-	#addAction (action, {replace} = {}) {
+	#addAction (action, {preserveCaretChanges} = {}) {
 		let timestamp = Date.now();
 
 		if (this.options.pauseThreshold && timestamp - this.#timestamp > this.options.pauseThreshold && this.options.pauses !== "ignore") {
@@ -39,18 +39,11 @@ export default class Recorder extends EventTarget {
 			this.actions.push({type: "pause", delay});
 		}
 
-		if (replace) {
-			this.actions.pop();
-		}
+		let toPack = this.actions.slice(-1); // last item or empty array if no items
+		toPack.push(action);
+		let actions = util.packActions(toPack, {preserveCaretChanges});
 
-		let lastAction;
-
-		if (this.actions.length > 0) {
-			lastAction = this.actions.pop();
-		}
-
-		let actions = util.packActions([action, lastAction]);
-
+		this.actions.pop(); // Remove last action since it will be re-added
 		this.actions.push(...actions);
 
 		this.dispatchEvent(new CustomEvent("actionschange", {detail: {action}}));
@@ -115,16 +108,7 @@ export default class Recorder extends EventTarget {
 					action.editor = this.#activeEditor;
 				}
 
-				let replace = !this.options.preserveCaretChanges
-					&& lastAction && lastAction.type === "caret" // last action is also a caret change
-					&& !action.editor; // and editor has not changed
-
-				if (replace && lastAction.editor) {
-					// Last action switched editor, we need to preserve this
-					action.editor = lastAction.editor;
-				}
-
-				this.#addAction(action, { replace });
+				this.#addAction(action, { preserveCaretChanges: this.options.preserveCaretChanges });
 			}
 		}
 

@@ -23,31 +23,55 @@ export function getEditors(editor) {
 	}
 }
 
-export function packActions (actions) {
+export function packActions (actions, {preserveCaretChanges}) {
 	let ret = [];
 	let previousAction;
 
-	for (let action of actions) {
+	for (let i=0; i<actions.length; i++) {
+		let action = actions[i];
+		let previousAction = actions[i - 1];
+		let added = false;
+
 		if (previousAction) {
 			if (typeof previousAction === "string") {
 				// Expand compact insertText action so we can compare it to the new action
 				previousAction = {type: "insertText", text: previousAction};
 			}
 
-			// Use split: true to compact consequtive single character insertText actions
-			if (isCharacterByCharacter(action) && isCharacterByCharacter(previousAction)) {
-				ret.pop();
-				previousAction = {
-					type: "insertText",
-					text: previousAction.text + action.text,
-					split: true
-				};
-				ret.push(previousAction);
-			}
+			if (action.type === "caret" && !preserveCaretChanges) {
+				// Can we replace the previous action?
+				// Last action needs to also be a caret change, and editor should not have been changed
+				if (previousAction?.type === "caret" && !action.editor) {
+					// Remove previous action
+					actions.splice(i-1, 1);
+					i--;
 
-			if (actionsEqual(previousAction, action)) {
-				// Merge consecutive actions
-				previousAction.repeat = (previousAction.repeat || 1) + 1;
+					if (previousAction.editor) {
+						// Last action switched editor, we need to preserve this
+						action.editor = previousAction.editor;
+					}
+				}
+			}
+			else if (action.type === "insertText") {
+				// Use split: true to compact consequtive single character insertText actions
+				// if (action.text === "b" && previousAction.text === "a") debugger;
+				if (isCharacterByCharacter(action) && isCharacterByCharacter(previousAction)) {
+					ret[i-1] = {
+						type: "insertText",
+						text: previousAction.text + action.text,
+						split: true
+					};
+					added = true;
+				}
+			}
+			else {
+				if (actionsEqual(previousAction, action, {ignore: ["repeat"]})) {
+					// Merge consecutive actions
+					// We don’t want to merge consecutive insertText actions because we want the typed text
+					// to be in the script, for ease of editing
+					previousAction.repeat = (previousAction.repeat || 1) + 1;
+					added = true;
+				}
 			}
 		}
 
@@ -56,8 +80,9 @@ export function packActions (actions) {
 			action = action.text;
 		}
 
-		ret.push(action);
-		previousAction = action;
+		if (!added) {
+			ret.push(action);
+		}
 	}
 
 	return ret;
@@ -80,16 +105,21 @@ export function unpackActions (actions) {
 	});
 }
 
-function actionsEqual (action1, action2) {
+export function actionsEqual (action1, action2, {ignore = []} = {}) {
 	if (!action1 || !action2) {
 		return false;
 	}
 
-	let keys1 = Object.keys(action1);
-	let keys2 = Object.keys(action2);
+	let keys = new Set([...Object.keys(action1), ...Object.keys(action2)]);
 
-	if (JSON.stringify(keys1) !== JSON.stringify(keys2) || keys1.some(key => action1[key] !== action2[key])) {
-		return false;
+	for (let key of keys) {
+		if (ignore.includes(key)) {
+			continue;
+		}
+
+		if (action1[key] !== action2[key]) {
+			return false;
+		}
 	}
 
 	return true;
