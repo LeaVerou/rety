@@ -23,13 +23,13 @@ export function getEditors(editor) {
 	}
 }
 
-export function packActions (actions, {preserveCaretChanges}) {
+export function packActions (actions, {preserveCaretChanges} = {}) {
 	let ret = [];
 	let previousAction;
 
 	for (let i=0; i<actions.length; i++) {
 		let action = actions[i];
-		let previousAction = actions[i - 1];
+		let previousAction = ret[ret.length - 1];
 		let added = false;
 
 		if (previousAction) {
@@ -43,8 +43,7 @@ export function packActions (actions, {preserveCaretChanges}) {
 				// Last action needs to also be a caret change, and editor should not have been changed
 				if (previousAction?.type === "caret" && !action.editor) {
 					// Remove previous action
-					actions.splice(i-1, 1);
-					i--;
+					ret.splice(ret.length - 1, 1);
 
 					if (previousAction.editor) {
 						// Last action switched editor, we need to preserve this
@@ -54,14 +53,16 @@ export function packActions (actions, {preserveCaretChanges}) {
 			}
 			else if (action.type === "insertText") {
 				// Use split: true to compact consequtive single character insertText actions
-				// if (action.text === "b" && previousAction.text === "a") debugger;
 				if (isCharacterByCharacter(action) && isCharacterByCharacter(previousAction)) {
-					ret[i-1] = {
+					// Remove previous action
+					ret.splice(ret.length - 1, 1);
+
+					action = {
 						type: "insertText",
 						text: previousAction.text + action.text,
 						split: true
 					};
-					added = true;
+
 				}
 			}
 			else {
