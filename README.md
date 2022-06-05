@@ -183,8 +183,8 @@ Options:
 | Option | Default | Description |
 |---|---|---|
 | `delay` | `140` | Delay between consecutive actions when `runAll()` is used |
-| `pauses` | `"delay"` | `"pause"` | `"ignore"`  | What to do with pause actions? `"delay"` will just pause by that amount of time, `"pause"` will pause playback, `"ignore"` will discard them.  |
-| `animated_selection` | `true` | Should selections be animated or happen as one action? |
+| `pauses` | `"delay"`  | What to do with pause actions? `"delay"` will just pause by that amount of time, `"pause"` will pause playback, `"ignore"` will discard them. You can also provide a function that decides which of these keywords to return based on the action specifics |
+| `animated_selection` | `true` | Should selections be animated or happen at once? |
 
 #### Methods
 

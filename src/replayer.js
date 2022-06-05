@@ -197,10 +197,12 @@ export default class Replayer extends EventTarget {
 		let action = this.queue.shift();
 
 		if (action.type === "pause") {
-			if (this.options.pauses === "delay") {
+			let pauses = typeof this.options.pauses === "function"? this.options.pauses(action) : this.options.pauses;
+
+			if (pauses === "delay") {
 				await timeout(action.delay);
 			}
-			else if (this.options.pauses === "pause") {
+			else if (pauses === "pause") {
 				this.paused = true;
 			}
 		}
