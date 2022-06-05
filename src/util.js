@@ -25,7 +25,6 @@ export function getEditors(editor) {
 
 export function packActions (actions, {preserveCaretChanges} = {}) {
 	let ret = [];
-	let previousAction;
 
 	for (let i=0; i<actions.length; i++) {
 		let action = actions[i];
@@ -38,16 +37,18 @@ export function packActions (actions, {preserveCaretChanges} = {}) {
 				previousAction = {type: "insertText", text: previousAction};
 			}
 
-			if (action.type === "caret" && !preserveCaretChanges) {
-				// Can we replace the previous action?
-				// Last action needs to also be a caret change, and editor should not have been changed
-				if (previousAction?.type === "caret" && !action.editor) {
-					// Remove previous action
-					ret.splice(ret.length - 1, 1);
+			if (action.type === "caret") {
+				if (!preserveCaretChanges) {
+					// Can we replace the previous action?
+					// Last action needs to also be a caret change, and editor should not have been changed
+					if (previousAction?.type === "caret" && !action.editor) {
+						// Remove previous action
+						ret.splice(ret.length - 1, 1);
 
-					if (previousAction.editor) {
-						// Last action switched editor, we need to preserve this
-						action.editor = previousAction.editor;
+						if (previousAction.editor) {
+							// Last action switched editor, we need to preserve this
+							action.editor = previousAction.editor;
+						}
 					}
 				}
 			}
@@ -97,9 +98,11 @@ export function unpackActions (actions) {
 			return Array(times).fill(action);
 		}
 
-		if (action.type === "insertText" && action.split) {
-			delete action.split;
-			return action.text.split("").map(character => Object.assign({}, action, {text: character}));
+		if (action.type === "insertText") {
+			if (action.split) {
+				delete action.split;
+				return action.text.split("").map(character => Object.assign({}, action, {text: character}));
+			}
 		}
 
 		return action;
