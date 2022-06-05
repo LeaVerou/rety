@@ -51,6 +51,13 @@ export function packActions (actions, {preserveCaretChanges} = {}) {
 						}
 					}
 				}
+
+				// Only record a single position for non-selection caret movements
+				if (action.start === action.end) {
+					action.position = action.start;
+					delete action.start;
+					delete action.end;
+				}
 			}
 			else if (action.type === "insertText") {
 				// Use split: true to compact consequtive single character insertText actions
@@ -102,6 +109,12 @@ export function unpackActions (actions) {
 			if (action.split) {
 				delete action.split;
 				return action.text.split("").map(character => Object.assign({}, action, {text: character}));
+			}
+		}
+		else if (action.type === "caret") {
+			if (action.position) {
+				action.start = action.end = action.position;
+				delete action.position;
 			}
 		}
 
