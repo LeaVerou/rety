@@ -99,6 +99,7 @@ export default class Recorder extends EventTarget {
 			this.#addAction(action);
 		}
 
+		// Handle caret postion changes (including selections)
 		if (["select", "beforeinput", "keydown", "keyup", "click", "pointerdown", "pointerup"].includes(evt.type)) {
 			// Has the caret moved or the editor changed?
 			if (this.#selectionStart !== start || this.#selectionEnd !== end || this.#activeEditor !== previousEditor) {
@@ -108,10 +109,11 @@ export default class Recorder extends EventTarget {
 					action.editor = this.#activeEditor;
 				}
 
-				this.#addAction(action, { preserveCaretChanges: this.options.preserveCaretChanges });
+				this.#addAction(action, this.options);
 			}
 		}
 
+		// Handle custom keystrokes
 		if (this.options.keys && /^key(down|up)$/.test(evt.type)) {
 			let keys = this.options.keys = Array.isArray(this.options.keys) ? this.options.keys : [this.options.keys];
 
