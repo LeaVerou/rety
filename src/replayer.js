@@ -82,20 +82,22 @@ export default class Replayer extends EventTarget {
 
 		let {type, start, end} = action;
 
+		let options = Object.assign({}, this.options, action);
+
 		if (type === "caret") {
 			// Caret movement
 			if (start !== undefined) {
 				this.editor.selectionStart = start;
 			}
 
-			if (start !== undefined && end !== undefined && start !== end && this.options.animated_selection) {
+			if (start !== undefined && end !== undefined && start !== end && options.animated_selection) {
 				// Animated text selection to look more realistic
 				let sign = start < end ? 1 : -1;
 				let selectionLength = Math.abs(end - start);
 				let multiplier = selectionLength < 10? 2 : 3;
 				for (let i = start; (i - end) * sign <= 0; i += sign) {
 					this.editor.selectionEnd = i;
-					await timeout(multiplier * this.options.delay / selectionLength);
+					await timeout(multiplier * options.delay / selectionLength);
 				}
 			}
 			else {
@@ -148,8 +150,8 @@ export default class Replayer extends EventTarget {
 			}
 		}
 		else if (type === "key") {
-			let {type, event, ...options} = action;
-			let evt = new KeyboardEvent(event, options);
+			let {type, event, ...props} = action;
+			let evt = new KeyboardEvent(event, props);
 			this.editor.dispatchEvent(evt);
 		}
 		else if (type in Replayer.customActions) {
@@ -197,7 +199,8 @@ export default class Replayer extends EventTarget {
 		let action = this.queue.shift();
 
 		if (action.type === "pause") {
-			let pauses = typeof this.options.pauses === "function"? this.options.pauses(action) : this.options.pauses;
+			let options = Object.assign({}, this.options, action);
+			let pauses = typeof options.pauses === "function"? options.pauses(action) : options.pauses;
 
 			if (pauses === "delay") {
 				await timeout(action.delay);
