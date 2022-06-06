@@ -205,6 +205,10 @@ export default class Replayer extends EventTarget {
 			else if (pauses === "pause") {
 				this.paused = true;
 			}
+			else if (pauses === "ignore") {
+				this.played.push(action);
+				return this.next();
+			}
 		}
 		else {
 			await this.run(action);
@@ -219,12 +223,7 @@ export default class Replayer extends EventTarget {
 
 		this.played.push(action);
 
-		if (this.options.pauses === "ignore") {
-			return this.next();
-		}
-		else {
-			this.dispatchEvent(new CustomEvent("play", {detail: {action}}));
-		}
+		this.dispatchEvent(new CustomEvent("play", {detail: {action}}));
 
 		return action;
 	}
