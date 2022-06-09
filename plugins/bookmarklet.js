@@ -37,6 +37,7 @@ export default function record () {
 
 	let recorder = new Recorder(textareas, {
 		pauseCap: 5000,
+		pauseThreshold: 1000,
 		keys: [
 				{keys: "Ctrl + Enter", event: "keydown"},
 				{keys: "Meta + Enter", event: "keydown"}
