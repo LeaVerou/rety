@@ -112,7 +112,7 @@ export function unpackActions (actions) {
 			}
 		}
 		else if (action.type === "caret") {
-			if (action.position) {
+			if (action.position !== undefined) {
 				action.start = action.end = action.position;
 				delete action.position;
 			}
