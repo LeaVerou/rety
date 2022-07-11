@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rety: Live coding without the stress</title>
+
+<link rel="icon" href='logo.svg'>
+
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://get.mavo.io/mavo.css">
+<script src="https://get.mavo.io/mavo.js"></script>
+
+<style>
+	body {
+		margin: 0;
+	}
+	textarea {
+		display: block;
+		width: 100%;
+		height: calc(50vh - 2em);
+	}
+</style>
+
+</head>
+<body mv-app>
+
+<label>
+	Actions:
+	<textarea property="source"></textarea>
+</label>
+
+<label>
+	Packed Actions:
+	<textarea property="dest">[packActions(source)]</textarea>
+</label>
+<script>
+	function packActions() { return "..."}
+</script>
+<script type="module">
+import * as util from "./src/util.js";
+
+window.packActions = function packActions(str) {
+	if (!str?.trim()) {
+		return "";
+	}
+
+	str = JSON.parse(str);
+	return JSON.stringify(util.packActions(str));
+}
+</script>
+
+
+
+</body>
+</html>
