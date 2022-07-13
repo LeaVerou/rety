@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Live coding without the stress",
   "main": "src/recorder.js",
+  "type": "module",
   "directories": {
     "doc": "docs",
     "test": "tests"
