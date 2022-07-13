@@ -44,9 +44,9 @@ Live coding is to programming what a blackboard is to math or physics.
 
 However, it does create a unique challenge: My live coded slides don't make sense without me.
 This may be acceptable for a conference talk, which is usually recorded, but not in other contexts,
-such as teaching a university course, where all instructors need to be able to teach all lectures.
+such as teaching a university course, where all instructors need to be able to teach all lectures, and students need to be able to quickly refer to examples shown.
 
-I didn't want to remove live coding from my slides, as I truly belive it is the perfect implementation of the *"show, don’t tell"* teaching adage,
+I didn't want to remove live coding from my slides, as I truly believe it is the perfect implementation of the *"show, don’t tell"* teaching adage,
 so I thought instead: what if I could *record* my live coding, and make it replayable?
 However, doing so manually seemed like cruel and unusual punishment.
 And thus, rety was born (pronounced like the "rety" in "retype").
