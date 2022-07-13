@@ -59,7 +59,21 @@ export default class Replayer extends EventTarget {
 		return this.resume();
 	}
 
+	/**
+	 * Run an individual action
+	 * @param {Object} action The action to run
+	 * @void
+	 */
 	async run (action = this.queue.shift()) {
+		let unpacked = util.unpackActions([action]);
+
+		if (unpacked.length > 1) {
+			await Promise.all(unpacked.map(action => this.run(action)));
+		}
+		else {
+			action = unpacked[0];
+		}
+
 		if (action.editor) {
 			if (action.editor in this.editors) {
 				this.#activeEditor = action.editor;
