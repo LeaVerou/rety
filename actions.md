@@ -1,17 +1,30 @@
-# Rety Actions
+# Actions
 
-Rety records your typing as a sequence of *actions* and creates a *script*, which is a sequence of actions.
-These actions are just JSON objects and the *script* is an array of actions in order.
+Rety records your typing as a sequence of *actions* and creates a *Rety script*, which is just a sequence of actions.
+Actions are plain objects that reflect a change in the contents of an editor.
+The *script* is an array of such actions in order.
 Rety tries really hard to produce a script that is hand editable,
 so that you can go in and correct any mistakes you made during the recording without having to re-record yourself.
 
-## General structure
+This is what a Rety script looks like:
 
-Actions are objects that reflect a change in the status of the editor (e.g. the `<textarea>`).
+```js
+[
+	{"type":"caret","start":12,"end":15,"editor":"css"},
+	{"type":"insertText","text":"blue","split":true},
+	{"type":"pause","delay":4266},
+	{"type":"caret","start":8,"end":16,"editor":"html"},
+	{"type":"deleteContentBackward","repeat":3},
+	{"type":"insertText","text":"Hi","split":true}
+]
+```
+
+## Global properties
+
+### `type`
+
 All actions have a `type` property.
 This tells Rety what type of editing this action *represents*.
-The other properties are different depending on the type of action.
-Below we will explore what type of editing action each action type describes and what its properties mean.
 
 Most actions reflect granular editing, and their `type` directly corresponds to the [`event.inputType`](https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/inputType) property,
 with some differences:
@@ -22,26 +35,18 @@ with some differences:
 
 In the future, these actions may be preserved as-is.
 
-This is what a Rety script looks like:
-
-```js
-[
-	{"type":"caret","start":12,"end":15,"editor":"css"},
-	{"type":"insertText","text":"blue","split":true},
-	{"type":"pause","delay":4266},
-	{"type":"caret","start":8,"end":16,"editor":"html"},
-	{"type":"deleteContentBackward","repeat":2},
-	{"type":"insertText","text":"Hi","split":true}
-]
-```
-
-### Global properties
+### `repeat`
 
 Besides `type`, another global property is `repeat`.
 When you have multiple consecutive actions that are identical, `Recorder` combines them into the same action
 with a `repeat` property so it can be unpacked by `Replayer`.
 This is done to keep script size reasonable, since deleting content character by character is pretty common,
 and would end up in a lot of repetitive `{"type":"deleteContentBackward"}` actions all over the place.
+
+### `editor`
+
+This is only used when recording actions across multiple editors. Each editor is associated with an id,
+and only the actions that introduce an editor change include an `editor` property with the id of that editor.
 
 ## `caret` actions
 
