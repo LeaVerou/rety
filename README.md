@@ -16,7 +16,11 @@ and replay them later to recreate the same typing flow.
 
 This is particularly useful for orchestrating live demos that run without your presence.
 
-It does not come with any particular UI, the UI is up to you. The UI you see in these demos is not part of Rety.
+It does not come with any particular UI, the UI is up to you. The UI you see in some of the demos in these docs is not part of Rety.
+
+Here’s an example of using it together with the [Inspire.js](https://inspirejs.org) Live demo plugin to do live demos during a talk:
+
+<iframe width="100%" style="aspect-ratio: 560 / 315" src="https://www.youtube.com/embed/ZuZizqDF4q8?start=436" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 </section>
 
@@ -46,6 +50,13 @@ I didn't want to remove live coding from my slides, as I truly belive it is the 
 so I thought instead: what if I could *record* my live coding, and make it replayable?
 However, doing so manually seemed like cruel and unusual punishment.
 And thus, rety was born (pronounced like the "rety" in "retype").
+
+After using it extensively for [my course at MIT](https://designftw.mit.edu),
+I started using it during actual conference talks as well, as it was strictly superior to actual live coding:
+It offered the same progressive development which is the primary benefit of live coding,
+but none of the fumbling, delays, or mistakes that often come with it.
+You can [watch the first conference talk I did with it, at CSS Day 2022 here](https://www.youtube.com/watch?v=ZuZizqDF4q8)
+(first live demo at 7:15).
 
 Rety is designed to work well with the code editors of [Prism Live](https://live.prismjs.com/) and [CodeFlask](https://kazzkiq.github.io/CodeFlask/)
 but it should work with any `<input>`, `<textarea>` or even [compatible custom elements](#recorder-compatible-controls).
@@ -204,35 +215,6 @@ Options:
 | `recorder.queue` | Contains the actions that have been queued up for playing, but have not been played yet. Can also be set, and the array it is set to will be (shallowly) cloned. |
 | `recorder.paused` | `true` if the Replayer is paused or stopped, `false` if playing, `undefined` if the Replayer has not yet been used in any way. |
 | `recorder.played` | Array with actions that have already been played from the current queue. These actions have been removed from the queue. |
-
-### Actions
-
-Actions are objects that reflect a change in the status of the editor (e.g. the `<textarea>`).
-All actions have a `type` property.
-
-Actions with `type: "caret"` reflect caret position changes (including selections).
-They include `start` and `end` properties with the new position of the caret.
-By default, multiple consecutive `caret` actions are coalesced, i.e. any new `caret` action effectively replaces the previous one.
-This is because in most live demos, the caret moving around is not a significant action.
-However, you can use the `preserveCaretChanges` option to disable this.
-
-Actions with `type: "replace"` reflect a complete replace of the contents of the editor.
-The text to replace the contents with is in the `text` property.
-This never happens organically, but only when libraries replace the editor's contents and fire synthetic `input` events, without an `inputType` property.
-
-Any other action reflects granular editing, and its `type` corresponds to the [`event.inputType`](https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/inputType) property,
-with some differences:
-
-- `insertFromPaste` just becomes `insertText` with the pasted content in `text`
-- `insertLineBreak` just becomes `insertText` with the line break in `text`
-- `deleteByCut` just becomes `delete`
-
-Actions that insert text include the inserted text in the `text` property.
-
-The `deleteWordForward`, `deleteWordBackward`, `deleteSoftLineForward`, `deleteSoftLineBackward`, `deleteHardLineForward`, and `deleteHardLineBackward` actions
-also include an `after` property, with the caret position after the action.
-
-Actions with `type: "insertText"` are replaced by their `text` property, to cut down on the size of the actions log (since there is one of these for each character typed).
 
 </section>
 

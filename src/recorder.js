@@ -9,6 +9,12 @@ export default class Recorder extends EventTarget {
 	#activeEditor
 	#timestamp
 
+	/**
+	 * Construct a new Recorder instance.
+	 * @param {HTMLElement | HTMLElement[] | Object} editor An element to record actions on. Usually an <input> or <textarea>,
+	 * but any element that emits proper input events and has selectionStart and selectionEnd properties should work.
+	 * @param {Object} options
+	 */
 	constructor (editor, options = {}) {
 		super();
 

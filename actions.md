@@ -7,37 +7,57 @@ so that you can go in and correct any mistakes you made during the recording wit
 
 ## General structure
 
+Actions are objects that reflect a change in the status of the editor (e.g. the `<textarea>`).
+All actions have a `type` property.
+This tells Rety what type of editing this action *represents*.
+The other properties are different depending on the type of action.
+Below we will explore what type of editing action each action type describes and what its properties mean.
+
+Most actions reflect granular editing, and their `type` directly corresponds to the [`event.inputType`](https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/inputType) property,
+with some differences:
+
+- `insertFromPaste` just becomes `insertText` with the pasted content in `text`
+- `insertLineBreak` just becomes `insertText` with the line break in `text`
+- `deleteByCut` just becomes `delete`
+
+In the future, these actions may be preserved as-is.
+
 This is what a Rety script looks like:
 
 ```js
 [
 	{"type":"caret","start":12,"end":15,"editor":"css"},
 	{"type":"insertText","text":"blue","split":true},
-	{"type":"pause","delay":14266},
+	{"type":"pause","delay":4266},
 	{"type":"caret","start":8,"end":16,"editor":"html"},
-	{"type":"deleteContentBackward"},
+	{"type":"deleteContentBackward","repeat":2},
 	{"type":"insertText","text":"Hi","split":true}
 ]
 ```
 
-The only field that all types of actions share is `"type"`.
-This tells Rety what type of editing this action *represents*.
-The other properties are different depending on the type of action.
-Below we will explore what type of editing action each action type describes and what its properties mean.
+### Global properties
+
+Besides `type`, another global property is `repeat`.
+When you have multiple consecutive actions that are identical, `Recorder` combines them into the same action
+with a `repeat` property so it can be unpacked by `Replayer`.
+This is done to keep script size reasonable, since deleting content character by character is pretty common,
+and would end up in a lot of repetitive `{"type":"deleteContentBackward"}` actions all over the place.
 
 ## `caret` actions
 
 These actions record changes of position of the caret (including selections).
 By default, consecutive `caret` actions are collapsed into the last one
 (since you don’t usually want the caret jumping around without anything happening between these changes of position)
-but you can change that.
+but you can change that using the `preserveCaretChanges` option.
 
 ### Properties
 
+* `position`: The position of the caret (when there is no selection)
 * `start`: The start position of the caret
 * `end`: The end position of the caret
 
 If `start` is different than `end`, text was selected.
+If `position` is used, `start` and `end` will not be present and vice versa.
 
 ## `insertText` actions
 
@@ -58,7 +78,7 @@ This represents a pause in editing.
 
 By default, Rety only records pauses longer than 2 seconds (customizable).
 The actual delay (in milliseconds) is recorded in the `delay` property.
-You can set a maximum delay to cap pauses to, so that the script makes sense even if you e.g. stop recording to have a meal.
+You can set a maximum delay to cap pauses to, so that the script makes sense even if you e.g. stop recording to go have a meal.
 
 Often, you will find that these pauses are natural breaking points in your demo.
 Therefore, `Replayer` supports multiple different strategies for replaying pauses (actually pausing the playback, stopping until you play again etc).
@@ -69,11 +89,17 @@ These represent various ways of deleting content.
 
 All of these are treated the same and delete content backwards.
 
-## `deleteContentForward` actions
 
-This represents deleting content on the right (or left in RTL) of the caret.
+## `deleteWordForward`, `deleteWordBackward`, `deleteSoftLineForward`, `deleteSoftLineBackward`, `deleteHardLineForward`, and `deleteHardLineBackward` actions
 
-Content deleted after the caret. If text is selected before this action, this is identical to the previous actions.
+`delete*Backward` actions represent deleting content on the left (or right, in RTL) of the caret,
+while `delete*Forward` actions represent deleting content on the right (or left in RTL) of the caret.
+
+If text is selected before this action, all delete actions are identical.
+
+### Properties
+
+These also include an `after` property, with the caret position after the action.
 
 ## `historyUndo` and `historyRedo` actions
 
@@ -106,3 +132,13 @@ If Rety’s `Replayer` finds any `key` actions, it fires a synthetic event to si
 ### Properties
 
 * `key`, `code`, `altKey`, `shiftKey`, `ctrlKey`, `metaKey` all correspond to properties of the event object
+
+## Custom actions
+
+Rety's Replayer can also be taught about entirely custom actions. E.g. in one of my talks, [I add a custom action that nagivates to the next slide](https://github.com/LeaVerou/talks/blob/master/dynamic-css-secrets/talk.js#L4-L6=):
+
+```js
+Replayer.customActions.next_slide = function({replayer, editor, action}) {
+	Inspire.next();
+}
+```

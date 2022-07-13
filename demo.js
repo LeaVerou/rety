@@ -18,10 +18,13 @@ function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// This component is held together with duct tape.
+// Do not refer to this as an example of decent code.
 class RetyDemo extends HTMLElement {
 	constructor () {
 		super();
 
+		// TODO most of this should be moved to connectedCallback()
 		this.dom = {};
 		this.withSource = this.classList.contains("with-source");
 		this.withPreview = this.classList.contains("with-preview");
@@ -72,7 +75,7 @@ class RetyDemo extends HTMLElement {
 		<button onclick="this.closest('rety-demo').rewind()">⏮ Rewind</button>
 		<button onclick="this.closest('rety-demo').next()">▶️ Play next</button>
 		<button onclick="this.closest('rety-demo').runUntilNextPause()">▶️ Play section</button>
-		<button onclick="this.closest('rety-demo').runAll()">▶️ Play from beginning</button>
+		<button onclick="this.closest('rety-demo').runAll()" class="play-from-beginning">▶️ Play from beginning</button>
 		<button onclick="this.closest('rety-demo').replayer.pause()">⏸ Pause</button>
 		<button onclick="this.closest('rety-demo').replayer.resume()">▶️ Resume</button>
 	</div>
@@ -113,7 +116,7 @@ class RetyDemo extends HTMLElement {
 				this.log.value = formatActionsArray(this.recorder.actions);
 				this.log.dispatchEvent(new InputEvent('input'));
 
-				lastAction = this.replayer.run(action);
+				lastAction = await this.replayer.run(action);
 			});
 		}
 
@@ -136,6 +139,12 @@ class RetyDemo extends HTMLElement {
 
 		if (this.log.value) {
 			this.#updateLogActions();
+		}
+
+		this.dispatchEvent(new CustomEvent("rety-demo-ready"), {bubbles: true});
+
+		if (this.hasAttribute("autoplay")) {
+			this.runAll();
 		}
 	}
 
