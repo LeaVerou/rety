@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="..">
+<title>rety: Live coding without the stress</title>
+
+<link rel="icon" href='logo.svg'>
+
+<link rel="stylesheet" href="assets/prism.css">
+<link rel="stylesheet" href="https://live.prismjs.com/prism-live.css">
+<link rel="stylesheet" href="style.css">
+
+<script src="https://md-block.verou.me/md-block.js" type="module" async></script>
+
+</head>
+<body>
+
+
+<rety-demo>
+	<textarea class="language-css">button {
+	border: .1em solid black;
+	background: transparent;
+	color: black;
+}</textarea>
+	<textarea class="language-actions-json" id="foobar">[
+	{"type":"caret","start":0,"end":60,"editor":"css"}
+]
+	</textarea>
+</rety-demo>
+
+
+<rety-demo>
+	<textarea class="language-css"></textarea>
+	<textarea class="language-actions-json" id="foobar">[
+	{"type":"insertText","text":"@property --color-hue {\n\tsyntax: \"<number>\";\n\tinitial-value: 0;\n\tinherits: true;\n}"}
+]
+	</textarea>
+</rety-demo>
+
+<script src="assets/prism.js"></script>
+<script src="https://live.prismjs.com/src/prism-live.js?load=css,markup,javascript"></script>
+<script src="demo.js" type="module"></script>
+
+</body>
+</html>
