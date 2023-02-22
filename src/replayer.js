@@ -102,6 +102,11 @@ export default class Replayer extends EventTarget {
 
 		if (type === "caret") {
 			// Caret movement
+			if (action.relative) {
+				start = this.editor.selectionStart + start;
+				end = this.editor.selectionEnd + end;
+			}
+
 			if (start !== undefined) {
 				this.editor.selectionStart = start;
 			}
