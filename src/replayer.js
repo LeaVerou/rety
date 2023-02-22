@@ -5,6 +5,8 @@ function timeout(ms) {
 }
 
 export default class Replayer extends EventTarget {
+	customActions = {};
+
 	constructor (editor, options = {}) {
 		super();
 
@@ -168,8 +170,8 @@ export default class Replayer extends EventTarget {
 			let evt = new KeyboardEvent(event, props);
 			this.editor.dispatchEvent(evt);
 		}
-		else if (type in Replayer.customActions) {
-			Replayer.customActions[type]({
+		else {
+			this.#getCustomAction(type)?.({
 				replayer: this,
 				action,
 				editor: this.editor
@@ -199,6 +201,10 @@ export default class Replayer extends EventTarget {
 		if (activeElement !== document.body && !Object.values(this.editors).includes(activeElement)) {
 			activeElement.focus();
 		}
+	}
+
+	#getCustomAction (type) {
+		return this.customActions[type] || Replayer.customActions[type];
 	}
 
 	pause () {
